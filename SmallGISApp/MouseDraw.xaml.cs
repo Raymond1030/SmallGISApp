@@ -17,14 +17,21 @@ namespace SmallGISApp
     /// <summary>
     /// MouseDraw.xaml 的交互逻辑
     /// </summary>
+    
     public partial class MouseDraw : Window
     {
         bool isDrawingEnabled = false;//是否开始画图
 
-        //画线
+        //画线 面
+        Point currentPoint = new Point();//记录目前最后一个点
+
         private bool isDrawingLine = false; // 是否处于绘制线条的模式
-        Point? currentpoint = null;//记录目前最后一个点
-        Line currentline = new Line();//记录每条线的轨迹
+        Line currentLine = new Line();//记录每条线的轨迹
+
+        private bool isDrawingPolygon = false; // 是否处于绘制面的模式
+        Polygon currentPolygon = new Polygon();//记录每个面的点轨迹
+
+        //橡皮筋 线
         Path temPath = new Path();//在鼠标划动过程 线的橡皮筋
         
         //图层 记录画好的点、线、面
@@ -36,7 +43,9 @@ namespace SmallGISApp
         public MouseDraw()
         {
             InitializeComponent();
+            
         }
+
 
         private void MouseDrawButton_Click(object sender, RoutedEventArgs e)
         {
@@ -59,69 +68,112 @@ namespace SmallGISApp
                 return; // Exit if drawing is not enabled
 
             //1. 鼠标画点
-            if (rbPoint.IsChecked==true)         
-            {   
+            if (Item_Point.IsSelected == true)
+            {
                 // Get the mouse click position
                 double winX = e.GetPosition(MousedrawingCanvas).X;
                 double winY = e.GetPosition(MousedrawingCanvas).Y;
                 //画点按钮
                 Point m_p = new Point(winX, winY);
-                m_p.DrawPoint(MousedrawingCanvas, 5);
+                m_p.Draw(MousedrawingCanvas, 5);
                 //图层记录点
                 save_Point.m_multiPoint.Add(m_p);
             }
             //2. 鼠标画线
-            else if (rbLine.IsChecked==true)
+            else if (Item_Line.IsSelected == true)
             {
                 // Get the mouse click position
                 double winX = e.GetPosition(MousedrawingCanvas).X;
                 double winY = e.GetPosition(MousedrawingCanvas).Y;
-                currentpoint = new Point(winX, winY);
+                currentPoint = new Point(winX, winY);
                 if (e.LeftButton == MouseButtonState.Pressed && !isDrawingLine)
                 {
-                    
-                    currentline.m_Line.Add(currentpoint);
+
+                    currentLine.m_Line.Add(currentPoint);
                     isDrawingLine = true;
 
                 }
                 else if (e.LeftButton == MouseButtonState.Pressed && isDrawingLine)
                 {
                     // 更新线条的结束位置
-                    currentpoint.x = e.GetPosition(MousedrawingCanvas).X;
-                    currentpoint.y = e.GetPosition(MousedrawingCanvas).Y;
+                    currentPoint.x = e.GetPosition(MousedrawingCanvas).X;
+                    currentPoint.y = e.GetPosition(MousedrawingCanvas).Y;
                     // 添加到线中
-                    currentline.m_Line.Add(currentpoint);
-                    currentline.DrawLine(MousedrawingCanvas);
+                    currentLine.m_Line.Add(currentPoint);
+                    currentLine.Draw(MousedrawingCanvas);
                 }
                 else if (e.RightButton == MouseButtonState.Pressed && isDrawingLine)
                 {
                     // 右击鼠标结束绘制线条
-                    currentline = new Line();
-                    isDrawingLine = false;
+                    // 保存线条到多线图层中
+                    save_Line.PushLine(currentLine);
+
+                    // 去掉橡皮筋线条
                     if (temPath != null)
                     {
+            
                         MousedrawingCanvas.Children.Remove(temPath);
-                    }    
-                    save_Line.m_multiLine.Add(currentline);
-                 
+                    }
+                    //重新初始化
+                    currentLine = new Line();
+                    isDrawingLine = false;
+       
+
+
                 }
 
             }
             //3. 鼠标画面
-            else if (rbPolygon.IsChecked == true)
+            else if (Item_Polygon.IsSelected == true)
             {
+                // Get the mouse click position
+                double winX = e.GetPosition(MousedrawingCanvas).X;
+                double winY = e.GetPosition(MousedrawingCanvas).Y;
+                currentPoint = new Point(winX, winY);
+                if (e.LeftButton == MouseButtonState.Pressed && !isDrawingPolygon)
+                {
+
+                    currentPolygon.m_polygon.Add(currentPoint);
+                    isDrawingPolygon = true;
+
+                }
+                else if (e.LeftButton == MouseButtonState.Pressed && isDrawingPolygon)
+                {
+                    // 更新线条的结束位置
+                    currentPoint.x = e.GetPosition(MousedrawingCanvas).X;
+                    currentPoint.y = e.GetPosition(MousedrawingCanvas).Y;
+                    // 添加到线中
+                    currentPolygon.m_polygon.Add(currentPoint);
+                    currentPolygon.Draw(MousedrawingCanvas,false);
+                }
+                else if (e.RightButton == MouseButtonState.Pressed && isDrawingPolygon)
+                {
+                    // 右击鼠标 开始涂色多边形
+                    currentPolygon.Draw(MousedrawingCanvas, true);
+
+                    // 重新初始化
+                    save_Polygon.PushPolygon(currentPolygon);
+                    currentPolygon = new Polygon();
+                    isDrawingPolygon = false;
+                    if (temPath != null)
+                    {
+                        MousedrawingCanvas.Children.Remove(temPath);
+                    }
+
+
+                }
 
             }
-
         }
         private void MousedrawingCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (rbLine.IsChecked == true && isDrawingLine && currentline != null)
+            //橡皮筋效果
+            if ((Item_Polygon.IsSelected==true||Item_Line.IsSelected == true) && (isDrawingLine||isDrawingPolygon) && (currentLine != null||currentPolygon!=null))
             {
                 double winX = e.GetPosition(MousedrawingCanvas).X;
                 double winY = e.GetPosition(MousedrawingCanvas).Y;
                 LineGeometry myLineGeometry = new LineGeometry();
-                myLineGeometry.StartPoint = new System.Windows.Point(currentpoint.x, currentpoint.y);
+                myLineGeometry.StartPoint = new System.Windows.Point(currentPoint.x, currentPoint.y);
                 myLineGeometry.EndPoint = new System.Windows.Point(winX, winY);
 
                 if (!MousedrawingCanvas.Children.Contains(temPath))
@@ -135,6 +187,44 @@ namespace SmallGISApp
             }
         }
 
+        private void Btn_Point_Click(object sender, RoutedEventArgs e)
+        {
+            rbPoint.IsChecked = true;
+        }
+        private void Btn_Line_Click(object sender, RoutedEventArgs e)
+        {
+            rbLine.IsChecked = true;
+        }
+        private void Btn_Polygon_Click(object sender, RoutedEventArgs e)
+        {
+            rbPolygon.IsChecked = true;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void TwitterButton_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Checkbox_Edit_Checked(object sender, RoutedEventArgs e)
+        {
+            Item_Point.IsEnabled = true;
+            Item_Line.IsEnabled = true;
+            Item_Polygon.IsEnabled = true;
+            isDrawingEnabled = true;
+        }
+
+        private void Checkbox_Edit_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Item_Point.IsEnabled = false;
+            Item_Line.IsEnabled = false;
+            Item_Polygon.IsEnabled = false;
+            isDrawingEnabled = false;
+        }
 
     }
 }

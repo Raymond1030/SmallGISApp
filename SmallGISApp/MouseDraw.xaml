@@ -4,12 +4,333 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmallGISApp"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MouseDraw" Height="450" Width="800">
-    <Grid>
-        <Canvas Name="MousedrawingCanvas" Background="White" MouseDown="MousedrawingCanvas_MouseDown" MouseMove="MousedrawingCanvas_MouseMove">
-            <Grid Height="147" Width="377">
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}" Cursor="" 
+        Title="MouseDraw" Height="1080" Width="1920" WindowStyle="None" WindowState="Maximized">
 
+    <Grid>
+
+        <StackPanel Background="#FF673AB7" Cursor="" Height="61" VerticalAlignment="Top">
+            <TextBlock Text="Mouse Draw" FontSize="30" Foreground="White" HorizontalAlignment="Center" Margin="0,11,0,0"/>
+            <Button Width="100" HorizontalAlignment="Right" Margin="0,-39,13,0" Height="41" Content="Exit" Click="Button_Click"/>
+
+        </StackPanel>
+        <Grid Width="600" Height="600" Margin="200 150 50 0" HorizontalAlignment="Left">
+            <materialDesign:DrawerHost
+  x:Name="DrawerHost"
+  Width="480"
+  Height="480"
+  Margin="32"
+  HorizontalAlignment="Center"
+  VerticalAlignment="Center"
+  BorderBrush="{DynamicResource MaterialDesignDivider}"
+  BorderThickness="2"
+  BottomDrawerBackground="{DynamicResource SecondaryHueLightBrush}"
+  BottomDrawerCornerRadius="20 20 0 0">
+                <materialDesign:DrawerHost.Style>
+                    <Style
+      TargetType="materialDesign:DrawerHost"
+      BasedOn="{StaticResource {x:Type materialDesign:DrawerHost}}">
+                        <Style.Triggers>
+                            <DataTrigger
+          Binding="{Binding IsChecked, ElementName=BackgroundToggle}"
+          Value="True">
+                                <Setter
+            Property="OverlayBackground"
+            Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </materialDesign:DrawerHost.Style>
+                <materialDesign:DrawerHost.LeftDrawerContent>
+                    <StackPanel
+      Margin="16">
+                        <TextBlock
+        Margin="4"
+        HorizontalAlignment="Center"
+        Text="LEFT FIELD" />
+                        <Button
+        Margin="4"
+        HorizontalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        CommandParameter="{x:Static Dock.Left}"
+        Content="CLOSE THIS"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                        <Button
+        Margin="4"
+        HorizontalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        Content="CLOSE ALL"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                    </StackPanel>
+                </materialDesign:DrawerHost.LeftDrawerContent>
+                <materialDesign:DrawerHost.TopDrawerContent>
+                    <StackPanel
+      Margin="16"
+      HorizontalAlignment="Center"
+      Orientation="Horizontal">
+                        <TextBlock
+        Margin="4"
+        VerticalAlignment="Center"
+        Text="TOP BANANA" />
+                        <Button
+        Margin="4"
+        VerticalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        Content="CLOSE ALL"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                        <Button
+        Margin="4"
+        VerticalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        CommandParameter="{x:Static Dock.Top}"
+        Content="CLOSE THIS"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                    </StackPanel>
+                </materialDesign:DrawerHost.TopDrawerContent>
+                <materialDesign:DrawerHost.RightDrawerContent>
+                    <StackPanel
+      Margin="16">
+                        <TextBlock
+        Margin="4"
+        HorizontalAlignment="Center"
+        Text="THE RIGHT STUFF" />
+                        <Button
+        Margin="4"
+        HorizontalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        CommandParameter="{x:Static Dock.Right}"
+        Content="CLOSE THIS"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                        <Button
+        Margin="4"
+        HorizontalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        Content="CLOSE ALL"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                    </StackPanel>
+                </materialDesign:DrawerHost.RightDrawerContent>
+                <materialDesign:DrawerHost.BottomDrawerContent>
+                    <StackPanel
+      Margin="16"
+      HorizontalAlignment="Center"
+      Orientation="Horizontal">
+                        <TextBlock
+        Margin="4"
+        VerticalAlignment="Center"
+        Foreground="{DynamicResource SecondaryHueMidForegroundBrush}"
+        Text="BOTTOM BRACKET" />
+                        <Button
+        Margin="4"
+        VerticalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        Content="CLOSE ALL"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                        <Button
+        Margin="4"
+        VerticalAlignment="Center"
+        Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+        CommandParameter="{x:Static Dock.Bottom}"
+        Content="CLOSE THIS"
+        Style="{StaticResource MaterialDesignFlatButton}" />
+                    </StackPanel>
+                </materialDesign:DrawerHost.BottomDrawerContent>
+                <Grid
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button
+      Grid.Row="1"
+      Grid.Column="0"
+      Margin="4"
+      Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+      CommandParameter="{x:Static Dock.Left}"
+      Content="{materialDesign:PackIcon Kind=ArrowLeft}" />
+                    <Button
+      Grid.Row="0"
+      Grid.Column="1"
+      Margin="4"
+      Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+      CommandParameter="{x:Static Dock.Top}"
+      Content="{materialDesign:PackIcon Kind=ArrowUp}" />
+                    <Button
+      Grid.Row="1"
+      Grid.Column="2"
+      Margin="4"
+      Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+      CommandParameter="{x:Static Dock.Right}"
+      Content="{materialDesign:PackIcon Kind=ArrowRight}" />
+                    <Button
+      Grid.Row="2"
+      Grid.Column="1"
+      Margin="4"
+      Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+      CommandParameter="{x:Static Dock.Bottom}"
+      Content="{materialDesign:PackIcon Kind=ArrowDown}" />
+                    <Button
+      Grid.Row="1"
+      Grid.Column="1"
+      Margin="4"
+      Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+      Content="{materialDesign:PackIcon Kind=ArrowAll}"
+      Style="{StaticResource MaterialDesignRaisedSecondaryButton}" />
+                </Grid>
+            </materialDesign:DrawerHost>
+        </Grid>
+        <StackPanel Margin="0,61,0,319">
+            <ToolBarTray>
+                <ToolBar
+    ClipToBounds="False"
+    Style="{StaticResource MaterialDesignToolBar}">
+                    <Button
+      Click="TwitterButton_OnClick"
+      Content="{materialDesign:PackIcon Kind=Twitter}"
+      ToolTip="Follow me on Twitter" />
+                    <Button
+      Content="{materialDesign:PackIcon Kind=ContentSave}"
+      ToolTip="Save" />
+                    <Separator />
+                    <Button
+      Command="Cut"
+      Content="{materialDesign:PackIcon Kind=ContentCut}"
+      ToolBar.OverflowMode="AsNeeded"
+      ToolTip="Cut" />
+                    <Button
+      Command="Copy"
+      Content="{materialDesign:PackIcon Kind=ContentCopy}"
+      ToolBar.OverflowMode="AsNeeded"
+      ToolTip="Copy that stuff" />
+                    <Separator />
+                    <Button
+      Command="Paste"
+      Content="{materialDesign:PackIcon Kind=ContentPaste}"
+      ToolBar.OverflowMode="AsNeeded"
+      ToolTip="Paste some stuff" />
+                    <!--
+          when badging in a toolbar, make sure the parent ToolBar.ClipToBounds="False", and
+          manually apply the button style
+        -->
+                    <materialDesign:Badged
+      Badge="{materialDesign:PackIcon Alert}"
+      CornerRadius="5"
+      ToolBar.OverflowMode="AsNeeded">
+                        <Button
+        Content="{materialDesign:PackIcon Kind=AirplaneTakeoff}"
+        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+        ToolTip="Badge it up!" />
+                    </materialDesign:Badged>
+                    <Separator />
+                    <ListBox>
+                        <ListBoxItem
+        ToolTip="This is a lonley toggle with TextBlock instead of icon">
+                            <TextBlock
+          Text="W" />
+                        </ListBoxItem>
+                    </ListBox>
+                    <Separator />
+                    <ListBox
+      SelectedIndex="0">
+                        <ListBox.ToolTip>
+                            <StackPanel>
+                                <TextBlock
+            Text="MaterialDesignToolToggleFlatListBox" />
+                                <TextBlock
+            Text="Exclusive selection" />
+                                <TextBlock
+            Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
+                            </StackPanel>
+                        </ListBox.ToolTip>
+                        <ListBoxItem x:Name="Item_Point"
+                            Content="{materialDesign:PackIcon Kind=VectorPoint}" IsSelected ="False" IsEnabled="False" />
+                        <ListBoxItem x:Name="Item_Line"
+                            Content="{materialDesign:PackIcon Kind=VectorLine}" IsEnabled="False" />
+                        <ListBoxItem x:Name="Item_Polygon"
+                            Content="{materialDesign:PackIcon Kind=VectorPolygon}" IsEnabled="False" />
+
+                    </ListBox>
+                    <CheckBox x:Name="Checkbox_Edit" Content="Edit Vector" Checked="Checkbox_Edit_Checked" IsChecked="False" Unchecked="Checkbox_Edit_Unchecked"></CheckBox>
+                    <Separator />
+                    <ListBox
+      SelectionMode="Extended">
+                        <ListBox.ToolTip>
+                            <StackPanel>
+                                <TextBlock
+            Text="MaterialDesignToolToggleListBox" />
+                                <TextBlock
+            Text="Multiple selection" />
+                                <TextBlock
+            Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
+                            </StackPanel>
+                        </ListBox.ToolTip>
+                        <ListBoxItem
+        Content="{materialDesign:PackIcon Kind=FormatBold}" />
+                        <ListBoxItem
+        Content="{materialDesign:PackIcon Kind=FormatItalic}" />
+                        <ListBoxItem
+        Content="{materialDesign:PackIcon Kind=FormatUnderline}" />
+                    </ListBox>
+                    <Separator />
+                    <Label
+      VerticalAlignment="Center"
+      Content="Font size:" />
+                    <ComboBox>
+                        <ComboBoxItem
+        Content="10" />
+                        <ComboBoxItem
+        Content="12"
+        IsSelected="True" />
+                        <ComboBoxItem
+        Content="14" />
+                        <ComboBoxItem
+        Content="16" />
+                    </ComboBox>
+                    <CheckBox
+      Content="Check" />
+                    <Button
+      Content="{materialDesign:PackIcon Kind=Hotel}"
+      ToolBar.OverflowMode="Always"
+      ToolTip="Take a nap" />
+                    <RadioButton
+      Content="Radio"
+      GroupName="XXX" />
+                    <RadioButton
+      Content="Ga Ga"
+      GroupName="XXX" />
+                    <Separator />
+                    <RadioButton
+      Content="{materialDesign:PackIcon Kind=Radio}"
+      GroupName="YYY"
+      Style="{StaticResource MaterialDesignToolRadioButton}" />
+                    <RadioButton
+      Content="{materialDesign:PackIcon Kind=EmoticonPoop}"
+      GroupName="YYY"
+      Style="{StaticResource MaterialDesignToolRadioButton}" />
+                    <Separator />
+                    <ToggleButton />
+                </ToolBar>
+            </ToolBarTray>
+        </StackPanel>
+        <Canvas Name="MousedrawingCanvas" Background="White" MouseDown="MousedrawingCanvas_MouseDown" MouseMove="MousedrawingCanvas_MouseMove" Margin="0,120,0,0">
+            <Grid Height="147" Width="377" Margin="900,500,0,0">
+                <Button Width="100" Margin="807,-439,-530,554" Content="normal" />
+                <Button Width="100" Margin="807,-377,-530,492" Content="stylish" Style="{DynamicResource MaterialDesignPaperButton}"/>
                 <Button x:Name="SwitchDrawButton" Content="开始画图" HorizontalAlignment="Left" Margin="116,13,0,0" VerticalAlignment="Top" Click="MouseDrawButton_Click"/>
 
                 <TextBlock TextWrapping="Wrap" Text="选择绘画类型" Margin="20,47,235,59" RenderTransformOrigin="0.51,1.447"/>
@@ -22,6 +343,35 @@
                 <!--<Button Content="画点" Click="PointDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="116,45,0,0" />
                 <Button Content="画线" Click="LineDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="200,45,0,0"/>
                 <Button Content="画面" Click="PolygonDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="157,45,0,0"/>-->
+                <StackPanel Margin="-892,-492,892,492">
+                    <materialDesign:PopupBox
+  
+  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+  
+  PlacementMode="BottomAndAlignCentres"
+  Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+  ToolTip="PopupBox, Style MaterialDesignMultiFloatingActionPopupBox"
+  ToolTipService.Placement="Right" Margin="50,50,0,0" Cursor="Hand">
+                        <StackPanel>
+                            <Button x:Name="Btn_Point"
+          Content="{materialDesign:PackIcon VectorPoint}"
+          Opacity="0.7"
+          ToolTip="Draw points" 
+          Click="Btn_Point_Click"/>
+                            <Button x:Name="Btn_Line"
+          Content="{materialDesign:PackIcon VectorLine}"
+            Opacity="0.7"
+          ToolTip="Draw lines" 
+          Click="Btn_Line_Click"/>
+                            <Button x:Name="Btn_Polygon"
+          Content="{materialDesign:PackIcon VectorPolygon}"
+            Opacity="0.7"
+          ToolTip="Draw Polygons" 
+          Click="Btn_Polygon_Click"/>
+                        </StackPanel>
+                    </materialDesign:PopupBox>
+                </StackPanel>
+
 
             </Grid>
 
