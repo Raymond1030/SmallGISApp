@@ -35,7 +35,7 @@ namespace SmallGISApp
             double Draw_point_y = Convert.ToDouble(Point_Text_Y.Text);
             //画点
             Point P = new Point(Draw_point_x, Draw_point_y);
-            P.DrawPoint(drawingCanvas,5);
+            P.Draw(drawingCanvas,5);
         }
 
     }

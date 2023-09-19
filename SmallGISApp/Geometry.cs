@@ -8,6 +8,7 @@ using System.Windows.Shapes;
 using System.Windows;
 using System.Windows.Controls;
 using System.Drawing;
+using System.Windows.Documents;
 
 namespace SmallGISApp
 {
@@ -15,18 +16,26 @@ namespace SmallGISApp
     {
         public int id { get; set; }
         public string color { get; set; }
+        public void draw()
+        {
+
+        }
     }
     //点类 point class
     internal class Point:Geometry
     {
         public double x { get; set; }
         public double y { get; set; }
+        public Point()
+        {
+    
+        }
         public Point(double p_x, double p_y)
         {
             this.x = p_x;
             this.y = p_y;
         }
-        public void DrawPoint(Canvas canvas, double radius)
+        public void Draw(Canvas canvas, double radius)//点绘画 Draw重载
         {
             Ellipse Drawpoint = new Ellipse
             {
@@ -67,7 +76,7 @@ namespace SmallGISApp
         {
            m_Line = new List<Point>();
         }
-        public void DrawLine(Canvas canvas)
+        public void Draw(Canvas canvas)//线绘画 Draw重载
         {
             for (int i = 0; i+ 1< m_Line.Count; i++)
             {
@@ -110,6 +119,44 @@ namespace SmallGISApp
         //添加顶点
         {
             m_polygon.Add(P);
+        }
+        public void Draw(Canvas canvas, bool IsFill )//面绘画 Draw重载
+        {
+         
+            if (!IsFill)
+            {
+                // IsFill==false 画多边形线
+                for (int i = 0; i + 1 < m_polygon.Count; i++)
+                {
+                    LineGeometry myLineGeometry = new LineGeometry();
+                    myLineGeometry.StartPoint = new System.Windows.Point(m_polygon[i].x, m_polygon[i].y);
+                    myLineGeometry.EndPoint = new System.Windows.Point(m_polygon[i + 1].x, m_polygon[i + 1].y);
+                    Path myPath = new Path();
+                    myPath.Stroke = Brushes.Black;
+                    myPath.StrokeThickness = 1;
+                    myPath.Data = myLineGeometry;
+                    canvas.Children.Add(myPath);
+                }
+            }
+            else if (IsFill)
+            {
+                // IsFill==true 多边形涂色
+                // Create solid brush.
+                //SolidBrush blueBrush = new SolidBrush(Color.Blue);
+
+                System.Windows.Shapes.Polygon newPolygon = new System.Windows.Shapes.Polygon();
+                List<System.Windows.Point>System_points= new List<System.Windows.Point>();
+                for (int i = 0; i < m_polygon.Count; i++)
+                {
+                    System.Windows.Point s_P = new System.Windows.Point(m_polygon[i].x, m_polygon[i].y);
+                    System_points.Add(s_P);
+                }
+                newPolygon.Points = new PointCollection(System_points);
+                newPolygon.Stroke = Brushes.Black;
+                newPolygon.StrokeThickness = 1;
+                newPolygon.Fill = Brushes.LightBlue;  // 设置填充颜色
+                canvas.Children.Add(newPolygon);
+            }
         }
     }
     //多面类 multi polygon class
