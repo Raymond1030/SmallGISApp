@@ -3,20 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:SmallGISApp"
         mc:Ignorable="d"
         Title="MouseDraw" Height="450" Width="800">
     <Grid>
         <Canvas Name="MousedrawingCanvas" Background="White" MouseDown="MousedrawingCanvas_MouseDown" MouseMove="MousedrawingCanvas_MouseMove">
-            <Grid Height="147" Width="377">
+            <Grid Height="217" Width="377" HorizontalAlignment="Center" VerticalAlignment="Center">
 
                 <Button x:Name="SwitchDrawButton" Content="开始画图" HorizontalAlignment="Left" Margin="116,13,0,0" VerticalAlignment="Top" Click="MouseDrawButton_Click"/>
 
                 <TextBlock TextWrapping="Wrap" Text="选择绘画类型" Margin="20,47,235,59" RenderTransformOrigin="0.51,1.447"/>
-                <RadioButton GroupName="DrawType" Name="rbPoint" Content="点" IsChecked="True" Margin="116,48,225,83" />
-                <RadioButton  GroupName="DrawType" Name="rbLine" Content="线" HorizontalAlignment="Left" Margin="116,74,0,0" VerticalAlignment="Top"/>
-                <RadioButton  GroupName="DrawType" Name="rbPolygon" Content="面" HorizontalAlignment="Left" Margin="116,99,0,0" VerticalAlignment="Top"/>
                 <TextBlock TextWrapping="Wrap" Text="鼠标画图" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="43,15,0,0"/>
+                <TextBlock x:Name="SizeName" Text="点大小" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="49,135,0,0"></TextBlock>
+                <TextBlock x:Name="tblock" Text="{Binding Value, ElementName=Size}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="168,132,0,0"/>
+                <Slider x:Name="Size" ValueChanged="Slider_ValueChanged" IsSnapToTickEnabled="True" Value="5" Minimum="1" Maximum="50" SelectionStart="1" SelectionEnd="50" Margin="105,131,209,59"/>
+                <xctk:ColorPicker x:Name="DrawcolorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged" Margin="108,172,249,28" SelectedColor="Black"/>
+                <xctk:ColorPicker x:Name="PaintcolorPicker" SelectedColorChanged="PaintColorPicker_SelectedColorChanged" Margin="108,203,249,-3" SelectedColor="CadetBlue"/>
+
+                <!--<xctk:ColorPicker x:Name="colorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged" Margin="108,172,249,28" />-->
+                <TextBlock TextWrapping="Wrap" Margin="0,175,285,27" HorizontalAlignment="Right" Width="64"><Run Language="zh-cn" Text="点及线"/><Run Text="颜色"/></TextBlock>
+                <RadioButton GroupName="DrawType" Name="rbPoint" Content="点" IsChecked="True" Margin="116,48,225,154" Checked="rbPoint_Checked" />
+                <RadioButton  GroupName="DrawType" Name="rbLine" Content="线" HorizontalAlignment="Left" Margin="116,74,0,0" VerticalAlignment="Top" Checked="rbLine_Checked"/>
+                <RadioButton  GroupName="DrawType" Name="rbPolygon" Content="面" HorizontalAlignment="Left" Margin="116,99,0,0" VerticalAlignment="Top" Checked="rbPolygon_Checked"/>
 
 
                 <!--<Button Content="画点" Click="PointDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="116,45,0,0" />
@@ -24,6 +33,7 @@
                 <Button Content="画面" Click="PolygonDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="157,45,0,0"/>-->
 
             </Grid>
+            <TextBlock TextWrapping="Wrap" Width="37" Height="15" Canvas.Left="51" Canvas.Top="202" VerticalAlignment="Center" HorizontalAlignment="Left"><Run Language="zh-cn" Text="面颜色"/><LineBreak/><Run Language="zh-cn"/><Run Text="颜色"/></TextBlock>
 
 
 

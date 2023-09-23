@@ -10,12 +10,15 @@ using System.Windows.Controls;
 using System.Drawing;
 using System.Windows.Documents;
 
+
 namespace SmallGISApp
 {
     internal class Geometry
     {
         public int id { get; set; }
-        public string color { get; set; }
+        public System.Windows.Media.Color color { get; set; }//颜色
+        public string attribute { get; set; }//属性
+     
         public void draw()
         {
 
@@ -26,6 +29,8 @@ namespace SmallGISApp
     {
         public double x { get; set; }
         public double y { get; set; }
+        //点半径
+        public double radius { get; set; }
         public Point()
         {
     
@@ -35,17 +40,18 @@ namespace SmallGISApp
             this.x = p_x;
             this.y = p_y;
         }
-        public void Draw(Canvas canvas, double radius)//点绘画 Draw重载
+        public void Draw(Canvas canvas)//点绘画 Draw重载
         {
             Ellipse Drawpoint = new Ellipse
             {
-                Fill = Brushes.Black,
-                Width = radius * 2,
-                Height = radius * 2
+                //Fill = Brushes.Black,
+                Fill = new SolidColorBrush(this.color), // 使用 SolidColorBrush
+                Width = this.radius * 2,
+                Height = this.radius * 2
             };
 
-            Canvas.SetLeft(Drawpoint, this.x - radius);
-            Canvas.SetTop(Drawpoint, this.y - radius);
+            Canvas.SetLeft(Drawpoint, this.x - this.radius);
+            Canvas.SetTop(Drawpoint, this.y - this.radius);
 
             canvas.Children.Add(Drawpoint);
         }
@@ -76,6 +82,9 @@ namespace SmallGISApp
         {
            m_Line = new List<Point>();
         }
+
+        //线宽
+        public double width { get; set; }
         public void Draw(Canvas canvas)//线绘画 Draw重载
         {
             for (int i = 0; i+ 1< m_Line.Count; i++)
@@ -85,8 +94,9 @@ namespace SmallGISApp
                 myLineGeometry.EndPoint = new System.Windows.Point(m_Line[i+1].x, m_Line[i+1].y);
 
                 Path myPath = new Path();
-                myPath.Stroke = Brushes.Black;
-                myPath.StrokeThickness = 1;
+                //myPath.Stroke = Brushes.Black;
+                myPath.Stroke = new SolidColorBrush(this.color);
+                myPath.StrokeThickness = width;
                 myPath.Data = myLineGeometry;
 
                 canvas.Children.Add(myPath);
@@ -111,6 +121,8 @@ namespace SmallGISApp
     internal class Polygon:Geometry
     { 
         public List<Point> m_polygon { get; set; }
+        public System.Windows.Media.Color paintColor { get; set; }//颜色
+        public double width { get; set; }//线宽
         public Polygon()
         {
             m_polygon = new List<Point>();
@@ -132,8 +144,9 @@ namespace SmallGISApp
                     myLineGeometry.StartPoint = new System.Windows.Point(m_polygon[i].x, m_polygon[i].y);
                     myLineGeometry.EndPoint = new System.Windows.Point(m_polygon[i + 1].x, m_polygon[i + 1].y);
                     Path myPath = new Path();
-                    myPath.Stroke = Brushes.Black;
-                    myPath.StrokeThickness = 1;
+                    myPath.Stroke = new SolidColorBrush(this.color);
+                    //myPath.Stroke = Brushes.Black;
+                    myPath.StrokeThickness = width;
                     myPath.Data = myLineGeometry;
                     canvas.Children.Add(myPath);
                 }
@@ -152,9 +165,14 @@ namespace SmallGISApp
                     System_points.Add(s_P);
                 }
                 newPolygon.Points = new PointCollection(System_points);
-                newPolygon.Stroke = Brushes.Black;
-                newPolygon.StrokeThickness = 1;
-                newPolygon.Fill = Brushes.LightBlue;  // 设置填充颜色
+                //newPolygon.Stroke = Brushes.Black;
+                //线颜色
+                newPolygon.Stroke = new SolidColorBrush(this.color);
+                //线宽
+                newPolygon.StrokeThickness = width;
+                //newPolygon.Fill = Brushes.LightBlue;  
+                //设置填充颜色
+                newPolygon.Fill = new SolidColorBrush(this.paintColor);
                 canvas.Children.Add(newPolygon);
             }
         }

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit;
 
 namespace SmallGISApp
 {
@@ -72,7 +73,11 @@ namespace SmallGISApp
                 double winY = e.GetPosition(MousedrawingCanvas).Y;
                 //画点按钮
                 Point m_p = new Point(winX, winY);
-                m_p.Draw(MousedrawingCanvas, 5);
+                //画点的半径 由拖动栏控制数值
+                m_p.radius = Size.Value;
+                //画点的颜色 由颜色选择器控制
+                m_p.color = (Color)DrawcolorPicker.SelectedColor;
+                m_p.Draw(MousedrawingCanvas);
                 //图层记录点
                 save_Point.m_multiPoint.Add(m_p);
             }
@@ -97,6 +102,10 @@ namespace SmallGISApp
                     currentPoint.y = e.GetPosition(MousedrawingCanvas).Y;
                     // 添加到线中
                     currentLine.m_Line.Add(currentPoint);
+                    // 画线颜色
+                    currentLine.color= (Color)DrawcolorPicker.SelectedColor;
+                    // 画线宽
+                    currentLine.width = Size.Value;
                     currentLine.Draw(MousedrawingCanvas);
                 }
                 else if (e.RightButton == MouseButtonState.Pressed && isDrawingLine)
@@ -141,6 +150,12 @@ namespace SmallGISApp
                     currentPoint.y = e.GetPosition(MousedrawingCanvas).Y;
                     // 添加到线中
                     currentPolygon.m_polygon.Add(currentPoint);
+                    // 画线的颜色
+                    currentPolygon.color = (Color)DrawcolorPicker.SelectedColor;
+                    // 画多边形的颜色
+                    currentPolygon.paintColor= (Color)PaintcolorPicker.SelectedColor;
+                    // 画多边形线宽
+                    currentPolygon.width= Size.Value;
                     currentPolygon.Draw(MousedrawingCanvas,false);
                 }
                 else if (e.RightButton == MouseButtonState.Pressed && isDrawingPolygon)
@@ -175,8 +190,8 @@ namespace SmallGISApp
 
                 if (!MousedrawingCanvas.Children.Contains(temPath))
                 {
-                    temPath.Stroke = Brushes.Black;
-                    temPath.StrokeThickness = 1;
+                    temPath.Stroke = new SolidColorBrush((Color)DrawcolorPicker.SelectedColor); 
+                    temPath.StrokeThickness = Size.Value;
                     MousedrawingCanvas.Children.Add(temPath);
                 }
 
@@ -184,6 +199,61 @@ namespace SmallGISApp
             }
         }
 
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            //更改画点的半径
+            currentPoint.radius = Size.Value;
+            //更改画线宽
+            currentLine.width = Size.Value;
+            currentPolygon.width = Size.Value;
+        }
+        //private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color> e)
+        //{
+        //    Color selectedColor = e.NewValue;
+        //    // 你可以在这里处理所选的颜色，例如更改背景色等。
 
+        //}
+        private void PaintColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            if (e.NewValue.HasValue)
+            {
+                Color selectedColor = e.NewValue.Value;
+                // 你可以在这里处理所选的颜色，例如更改背景色等。
+            }
+        }
+
+        private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            if (e.NewValue.HasValue)
+            {
+                Color selectedColor = e.NewValue.Value;
+                // 你可以在这里处理所选的颜色，例如更改背景色等。
+            }
+        }
+
+        private void rbPoint_Checked(object sender, RoutedEventArgs e)
+        {
+            SizeName.Text = "点大小";
+            Size.Value = 5;
+            Size.Minimum = 1;
+            Size.Maximum = 50;
+
+        }
+
+        private void rbLine_Checked(object sender, RoutedEventArgs e)
+        {
+            SizeName.Text = "线宽";
+            Size.Value = 1;
+            Size.Minimum = 1;
+            Size.Maximum = 10;
+        }
+
+        private void rbPolygon_Checked(object sender, RoutedEventArgs e)
+        {
+            SizeName.Text = "线宽";
+            Size.Value = 1;
+            Size.Minimum = 1;
+            Size.Maximum = 10;
+        }
     }
 }
