@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Color = System.Windows.Media.Color;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace SmallGISApp
 {
@@ -345,19 +348,23 @@ namespace SmallGISApp
             this.Close();
         }
         private void Item_Point_Selected(object sender, RoutedEventArgs e)
+
         {
+            SizeName.Content = "Point Size:";
             Size.Value = 5;
             Size.Minimum = 1;
             Size.Maximum = 50;
         }
         private void Item_Line_Selected(object sender, RoutedEventArgs e)
         {
+            SizeName.Content = "Line Size:";
             Size.Value = 1;
             Size.Minimum = 1;
             Size.Maximum = 10;
         }
         private void Item_Polygon_Selected(object sender, RoutedEventArgs e)
         {
+            SizeName.Content = "Line Size:";
             Size.Value = 1;
             Size.Minimum = 1;
             Size.Maximum = 10;
@@ -377,7 +384,7 @@ namespace SmallGISApp
                 double height = bottom - top;
 
                 // 创建一个矩形框对象
-                Rectangle rectangle = new Rectangle();
+                System.Windows.Shapes.Rectangle rectangle = new System.Windows.Shapes.Rectangle();
 
                 // 设置矩形框的位置和尺寸
                 rectangle.Margin = new Thickness(left, top, 0, 0);
@@ -421,7 +428,7 @@ namespace SmallGISApp
                 MousedrawingCanvas.Children.Add(rectangle);
             }
         }
-        private void PaintColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        private void PaintColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
             if (e.NewValue.HasValue)
             {
@@ -472,6 +479,10 @@ namespace SmallGISApp
 
         private void Button_Clear_Click(object sender, RoutedEventArgs e)
         {
+
+            //画布清屏
+            MousedrawingCanvas.Children.Clear();
+
 
         }
     }

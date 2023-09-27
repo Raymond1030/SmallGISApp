@@ -153,7 +153,7 @@
                         </ListBox.ToolTip>
                     </ListBox>
                     <Separator />
-                    <Label
+                    <Label Name="SizeName"
                         VerticalAlignment="Center"
                         Content="Point size:" />
                     <TextBlock x:Name="tblock" Text="{Binding Value, ElementName=Size}" RenderTransformOrigin="-1.923,-1.087" Height="28" Width="25" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
