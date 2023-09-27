@@ -1,0 +1,192 @@
+﻿<Window x:Class="SmallGISApp.MouseDraw"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:SmallGISApp"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}" Cursor="" 
+        Title="MouseDraw" Height="1080" Width="1920" WindowStyle="None" WindowState="Maximized">
+
+    <Grid>
+
+        <Canvas x:Name="MousedrawingCanvas" Background="White" MouseDown="MousedrawingCanvas_MouseDown" MouseMove="MousedrawingCanvas_MouseMove" MouseUp="MousedrawingCanvas_MouseUp" Margin="0,127,0,0">
+            
+            <Grid Height="147" Width="377" Canvas.Left="1340" Canvas.Top="-254" RenderTransformOrigin="0.42,0.289">
+
+                <!--<Button Content="画点" Click="PointDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="116,45,0,0" />
+                <Button Content="画线" Click="LineDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="200,45,0,0"/>
+                <Button Content="画面" Click="PolygonDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="157,45,0,0"/>-->
+                <StackPanel Margin="-892,-492,892,492"/>
+
+
+            </Grid>
+
+
+
+
+            <!-- Later we will add our Ellipse (Point) here -->
+        </Canvas>
+
+        <StackPanel Background="#FF673AB7" Cursor="" Height="70" VerticalAlignment="Top">
+            <!--<TextBlock Text="Mouse Draw" FontSize="30" Foreground="White" HorizontalAlignment="Center" Margin="0,11,0,0"/>-->
+
+            <materialDesign:ColorZone
+                Padding="16"
+                Mode="PrimaryMid">
+                <DockPanel>
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <ToggleButton
+                            Style="{StaticResource MaterialDesignHamburgerToggleButton}" />
+                        <TextBlock
+                            Margin="16,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="Name of the GIS Program" />
+                    </StackPanel>
+                    <materialDesign:PopupBox
+                        DockPanel.Dock="Right"
+                        PlacementMode="BottomAndAlignRightEdges" HorizontalAlignment="Right">
+                        <ListBox>
+                            <ListBoxItem
+                                Content="Hello World" />
+                            <ListBoxItem
+                                Content="Nice Popup" />
+                            <ListBoxItem x:Name="ListBoxItem_Goodbye"
+                                Content="Goodbye" Selected="ListBoxItem_Goodbye_Selected"/>
+                        </ListBox>
+                    </materialDesign:PopupBox>
+                </DockPanel>
+            </materialDesign:ColorZone>
+        </StackPanel>
+        <Grid Width="600" Height="600" Margin="200 150 50 0" HorizontalAlignment="Left"/>
+        <StackPanel Margin="0,70,0,0">
+            <ToolBarTray >
+                <ToolBar
+                    ClipToBounds="False"
+                    Style="{StaticResource MaterialDesignToolBar}" Width="1910">
+                    <Button
+                        Click="TwitterButton_OnClick"
+                        Content="{materialDesign:PackIcon Kind=Earth}"
+                        ToolTip="Follow me on Twitter" />
+                    <Button
+                        Content="{materialDesign:PackIcon Kind=ContentSave}"
+                        ToolTip="Save" />
+                    <Separator />
+                    <ListBox SelectedIndex="0">
+                        <ListBoxItem x:Name="Item_Cursor"
+                            Content="{materialDesign:PackIcon Kind=CursorDefault}" 
+                            IsSelected ="True" Selected="Item_Cursor_Selected" />
+                        <ListBoxItem x:Name="Item_Hand"
+                            Content="{materialDesign:PackIcon Kind=HandBackRight}" 
+                            Selected="Item_Hand_Selected"  />
+                    </ListBox>
+                      
+                    <!--<xctk:ColorPicker x:Name="DrawcolorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged" Margin="123,65,645,135" SelectedColor="Black"/>-->
+                    <!--
+          when badging in a toolbar, make sure the parent ToolBar.ClipToBounds="False", and
+          manually apply the button style
+        -->
+                    
+                    <Separator />
+                    <Button
+                        Command="Cut"
+                        Content="{materialDesign:PackIcon Kind=ContentCut}"
+                        ToolBar.OverflowMode="AsNeeded"
+                        ToolTip="Cut" />
+                    <Button
+                          Command="Copy"
+                          Content="{materialDesign:PackIcon Kind=ContentCopy}"
+                          ToolBar.OverflowMode="AsNeeded"
+                          ToolTip="Copy that stuff" />  
+
+                    <Separator />
+                    <ListBox>
+                        <ListBox.ToolTip>
+                            <StackPanel>
+                                <TextBlock
+                                    Text="MaterialDesignToolToggleFlatListBox" />
+                                <TextBlock
+                                    Text="Exclusive selection" />
+                                <TextBlock
+                                    Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
+
+                            </StackPanel>
+
+                        </ListBox.ToolTip>
+
+
+                        <ListBoxItem x:Name="Item_Point"
+                            Content="{materialDesign:PackIcon Kind=VectorPoint}" IsSelected ="False" IsEnabled="False" Selected="Item_Point_Selected" />
+                        <ListBoxItem x:Name="Item_Line"
+                            Content="{materialDesign:PackIcon Kind=VectorLine}" IsEnabled="False" />
+                        <ListBoxItem x:Name="Item_Polygon"
+                            Content="{materialDesign:PackIcon Kind=VectorPolygon}" IsEnabled="False" />
+
+                    </ListBox>
+
+                    <CheckBox x:Name="Checkbox_Edit" Content="Edit Vector" 
+                              Checked="Checkbox_Edit_Checked" 
+                              IsChecked="False" Unchecked="Checkbox_Edit_Unchecked"
+                              VerticalAlignment="Center"/>
+
+                    <ListBox
+                        SelectionMode="Extended">
+                        <ListBox.ToolTip>
+                            <StackPanel>
+                                <TextBlock
+                                    Text="MaterialDesignToolToggleListBox" />
+                                <TextBlock
+                                    Text="Multiple selection" />
+                                <TextBlock
+                                    Text="ListBoxAssist.IsToggle allows more natural toggle behaviour" />
+                            </StackPanel>
+                        </ListBox.ToolTip>
+                    </ListBox>
+                    <Separator />
+                    <Label
+                        VerticalAlignment="Center"
+                        Content="Point size:" />
+                    <TextBlock x:Name="tblock" Text="{Binding Value, ElementName=Size}" RenderTransformOrigin="-1.923,-1.087" Height="28" Width="25" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                    <Slider x:Name="Size" ValueChanged="Slider_ValueChanged" IsSnapToTickEnabled="True" 
+                            Value="5" Minimum="1" Maximum="50" SelectionStart="1" SelectionEnd="50" 
+                            Height="21" Width="100"/>
+                    
+                    <!--<xctk:ColorPicker x:Name="PaintcolorPicker" SelectedColorChanged="PaintColorPicker_SelectedColorChanged" Margin="123,96,645,104" SelectedColor="CadetBlue" RenderTransformOrigin="0.503,1.845"/>-->
+                    <Separator />
+                    <Button
+                        Click="WrappedRectangle"
+                        Content="{materialDesign:PackIcon Kind=RectangleOutline}"
+                        ToolTip="Generate wrapped rectangles" />
+                    
+                    <Button x:Name="Button_Clear"
+                        Click="Button_Clear_Click"
+                        Content="{materialDesign:PackIcon Kind=TrashCan}"
+                        ToolTip="Clear all vectors" />   
+
+                    <Separator />
+                    <Label
+                        VerticalAlignment="Center"
+                        Content="Foreground:" />
+                    <xctk:ColorPicker x:Name="DrawcolorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged" SelectedColor="Black" Height="54" Width="54" RenderTransformOrigin="-9.08,-0.447" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Label
+                        VerticalAlignment="Center"
+                        Content="Background:" />
+                    <xctk:ColorPicker x:Name="PaintcolorPicker" SelectedColorChanged="PaintColorPicker_SelectedColorChanged" SelectedColor="CadetBlue" RenderTransformOrigin="0.503,1.845" Height="54" Width="54"/>
+                </ToolBar>
+            </ToolBarTray>
+            
+            <TextBox x:Name="MouseTextBox" Text="Mouse Position" TextWrapping="Wrap" Width="187" RenderTransformOrigin="-0.158,-3.622" Height="24" TextAlignment="Center" TextChanged="TextBox_TextChanged" MouseMove="MousedrawingCanvas_MouseMove" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        </StackPanel>
+    </Grid>
+</Window>
