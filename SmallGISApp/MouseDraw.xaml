@@ -175,14 +175,54 @@
                         ToolTip="Clear all vectors" />   
 
                     <Separator />
+                    
                     <Label
                         VerticalAlignment="Center"
-                        Content="Foreground:" />
-                    <xctk:ColorPicker x:Name="DrawcolorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged" SelectedColor="Black" Height="54" Width="54" RenderTransformOrigin="-9.08,-0.447" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                    <Label
-                        VerticalAlignment="Center"
-                        Content="Background:" />
-                    <xctk:ColorPicker x:Name="PaintcolorPicker" SelectedColorChanged="PaintColorPicker_SelectedColorChanged" SelectedColor="CadetBlue" RenderTransformOrigin="0.503,1.845" Height="54" Width="54"/>
+                        Content="Colors" />
+                    <materialDesign:PopupBox
+                        DockPanel.Dock="Right"
+                        PlacementMode="BottomAndAlignRightEdges" 
+                        HorizontalAlignment="Right"
+                        StaysOpen="True">
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Content="Foreground:" />
+                            <xctk:ColorPicker x:Name="DrawcolorPicker" 
+                                              Grid.Row="0"
+                                              Grid.Column="1"
+                                              SelectedColorChanged="ColorPicker_SelectedColorChanged" 
+                                              SelectedColor="Black" Height="54" Width="54" 
+                                              RenderTransformOrigin="-9.08,-0.447" 
+                                              HorizontalAlignment="Left" 
+                                              VerticalAlignment="Top"/>
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                VerticalAlignment="Center"
+                                Content="Background:" />
+                            <xctk:ColorPicker x:Name="PaintcolorPicker" 
+                                              Grid.Row="1"
+                                              Grid.Column="1"
+                                              SelectedColorChanged="PaintColorPicker_SelectedColorChanged" 
+                                              SelectedColor="CadetBlue" 
+                                              RenderTransformOrigin="0.503,1.845" 
+                                              Height="54" Width="54"/>
+                        </Grid>
+
+                    </materialDesign:PopupBox>
+                    
                 </ToolBar>
             </ToolBarTray>
             
