@@ -23,7 +23,7 @@ namespace SmallGISApp
         public System.Windows.Media.Color color { get; set; }//颜色
         public string attribute { get; set; }//属性
      
-        public void draw()
+        public void Draw()
         {
 
         }
@@ -73,8 +73,12 @@ namespace SmallGISApp
         {
             m_multiPoint.Add(P);
         }
-        public void DrawPoint(Point P)
+        public void DrawPoint(Canvas canvas)
         {
+            foreach(var P in m_multiPoint)
+            {
+                P.Draw(canvas);
+            }
         }
     }
     //线类 line class
@@ -139,6 +143,13 @@ namespace SmallGISApp
         public void PushLine(Line L)
         {
             m_multiLine.Add(L);
+        }
+        public void Draw(Canvas canvas)
+        {
+            foreach(var L in m_multiLine)
+            {
+                L.Draw(canvas);
+            }
         }
     }
     //面类 polygon class
@@ -243,6 +254,16 @@ namespace SmallGISApp
         {
 
             m_multiPolygon.Add(P);
+        }
+        public void Draw(Canvas canvas)
+        {
+            foreach(var Pg in m_multiPolygon)
+            {
+                //画线&Fill
+                Pg.Draw(canvas, false);
+                Pg.Draw(canvas, true);
+            }
+          
         }
     }
 

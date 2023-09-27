@@ -128,9 +128,9 @@
                         <ListBoxItem x:Name="Item_Point"
                             Content="{materialDesign:PackIcon Kind=VectorPoint}" IsSelected ="False" IsEnabled="False" Selected="Item_Point_Selected" />
                         <ListBoxItem x:Name="Item_Line"
-                            Content="{materialDesign:PackIcon Kind=VectorLine}" IsEnabled="False" />
+                            Content="{materialDesign:PackIcon Kind=VectorLine}" IsEnabled="False" Selected="Item_Line_Selected" />
                         <ListBoxItem x:Name="Item_Polygon"
-                            Content="{materialDesign:PackIcon Kind=VectorPolygon}" IsEnabled="False" />
+                            Content="{materialDesign:PackIcon Kind=VectorPolygon}" IsEnabled="False" Selected="Item_Polygon_Selected"/>
 
                     </ListBox>
 
