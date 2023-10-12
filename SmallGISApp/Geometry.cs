@@ -9,45 +9,56 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Drawing;
 using System.Windows.Documents;
+using SmallGISApp;
 
 
 namespace SmallGISApp
-{
+{     
     internal class Geometry
     {
         public double MaxY = -9999;
         public double MaxX = -9999;
         public double MinY = 9999;
         public double MinX = 9999;
+        
+
+        public double _vArea = 0;
+        public double _vLength = 0;
+        public int _vSize = 0;
         public int id { get; set; }
         public System.Windows.Media.Color color { get; set; }//颜色
         public string attribute { get; set; }//属性
-
+     
         public void Draw()
         {
 
         }
+
+        
     }
     //点类 point class
-    internal class Point : Geometry
+    internal class Point:Geometry
     {
         public double x { get; set; }
         public double y { get; set; }
+        public double Transformx = 0;
+        public double Transformy = 0;
         //点半径
         public double radius { get; set; }
         public Point()
         {
-
+            
         }
         public Point(double p_x, double p_y)
         {
             this.x = p_x;
-            this.y = p_y;
+            this.y = p_y;           
             this.radius = 5; // 设置一个固定的半径
             this.color = System.Windows.Media.Colors.Black; // 设置一个固定的颜色
         }
         public void Draw(Canvas canvas)//点绘画 Draw重载
         {
+            CLayer.layertest.SetFrame(ref CLayer.layertest, canvas);
             Ellipse Drawpoint = new Ellipse
             {
                 //Fill = Brushes.Black,
@@ -55,9 +66,9 @@ namespace SmallGISApp
                 Width = this.radius * 2,
                 Height = this.radius * 2
             };
-
-            Canvas.SetLeft(Drawpoint, this.x - this.radius);
-            Canvas.SetTop(Drawpoint, this.y - this.radius);
+            CLayer.layertest.MapXYChange(x, y,canvas, ref this.Transformx, ref this.Transformx);
+            Canvas.SetLeft(Drawpoint, Transformx - this.radius);
+            Canvas.SetTop(Drawpoint, Transformy - this.radius);
 
             canvas.Children.Add(Drawpoint);
         }
@@ -77,43 +88,45 @@ namespace SmallGISApp
         }
         public void DrawPoint(Canvas canvas)
         {
-            foreach (var P in m_multiPoint)
+            foreach(var P in m_multiPoint)
             {
                 P.Draw(canvas);
             }
         }
     }
     //线类 line class
-    internal class Line : Geometry
+    internal class Line:Geometry
     {
         //线 起点终点
-        public List<Point> m_Line { get; set; }
+        public List<Point> m_Line  { get; set; }
         public Line()
         {
-            m_Line = new List<Point>();
-            this.color = System.Windows.Media.Colors.Black; // 设置一个默认的颜色
-            this.width = 1.0; // 设置一个默认的线宽
+           m_Line = new List<Point>();
+           this.color = System.Windows.Media.Colors.Black; // 设置一个默认的颜色
+           this.width = 1.0; // 设置一个默认的线宽
         }
 
         //线宽
         public double width { get; set; }
         public void Draw(Canvas canvas)//线绘画 Draw重载
         {
-            for (int i = 0; i + 1 < m_Line.Count; i++)
+            CLayer.layertest.SetFrame(ref CLayer.layertest, canvas);
+            for (int i = 0; i+ 1< m_Line.Count; i++)
             {
-                //遍历一下box
-                if (m_Line[i].x > MaxX)
-                    MaxX = m_Line[i].x;
-                if (m_Line[i].y > MaxY)
-                    MaxY = m_Line[i].y;
-                if (m_Line[i].x < MinX)
-                    MinX = m_Line[i].x;
-                if (m_Line[i].y < MinY)
-                    MinY = m_Line[i].y;
-
+                ////遍历一下box
+                //if (m_Line[i].x > MaxX)
+                //    MaxX = m_Line[i].x;
+                //if (m_Line[i].y > MaxY)
+                //    MaxY = m_Line[i].y;
+                //if (m_Line[i].x < MinX)
+                //    MinX = m_Line[i].x;
+                //if (m_Line[i].y < MinY)
+                //    MinY = m_Line[i].y;
+                CLayer.layertest.MapXYChange(m_Line[i].x, m_Line[i].y,canvas, ref m_Line[i].Transformx, ref m_Line[i].Transformy);
+                CLayer.layertest.MapXYChange(m_Line[i+1].x, m_Line[i+1].y,canvas, ref m_Line[i+1].Transformx, ref m_Line[i+1].Transformy);
                 LineGeometry myLineGeometry = new LineGeometry();
-                myLineGeometry.StartPoint = new System.Windows.Point(m_Line[i].x, m_Line[i].y);
-                myLineGeometry.EndPoint = new System.Windows.Point(m_Line[i + 1].x, m_Line[i + 1].y);
+                myLineGeometry.StartPoint = new System.Windows.Point(m_Line[i].Transformx, m_Line[i].Transformy);
+                myLineGeometry.EndPoint = new System.Windows.Point(m_Line[i+1].Transformx, m_Line[i+1].Transformy);
 
                 Path myPath = new Path();
                 //myPath.Stroke = Brushes.Black;
@@ -125,19 +138,19 @@ namespace SmallGISApp
             }
             //遍历一下box
             //遍历一下box
-            if (m_Line[m_Line.Count - 1].x > MaxX)
-                MaxX = m_Line[m_Line.Count - 1].x;
-            if (m_Line[m_Line.Count - 1].y > MaxY)
-                MaxY = m_Line[m_Line.Count - 1].y;
-            if (m_Line[m_Line.Count - 1].x < MinX)
-                MinX = m_Line[m_Line.Count - 1].x;
-            if (m_Line[m_Line.Count - 1].y < MinY)
-                MinY = m_Line[m_Line.Count - 1].y;
+            //if (m_Line[m_Line.Count-1].x > MaxX)
+            //    MaxX = m_Line[m_Line.Count - 1].x;
+            //if (m_Line[m_Line.Count - 1].y > MaxY)
+            //    MaxY = m_Line[m_Line.Count - 1].y;
+            //if (m_Line[m_Line.Count - 1].x < MinX)
+            //    MinX = m_Line[m_Line.Count - 1].x;
+            //if (m_Line[m_Line.Count - 1].y < MinY)
+            //    MinY = m_Line[m_Line.Count - 1].y;
 
         }
     }
     //多线类 multi line class
-    class MultiLine : Geometry
+    class MultiLine :Geometry
     {
         public List<Line> m_multiLine { get; set; }
         public MultiLine()
@@ -150,15 +163,15 @@ namespace SmallGISApp
         }
         public void Draw(Canvas canvas)
         {
-            foreach (var L in m_multiLine)
+            foreach(var L in m_multiLine)
             {
                 L.Draw(canvas);
             }
         }
     }
     //面类 polygon class
-    internal class Polygon : Geometry
-    {
+    internal class Polygon:Geometry
+    { 
         public List<Point> m_polygon { get; set; }
         public System.Windows.Media.Color paintColor { get; set; }//颜色
         public double width { get; set; }//线宽
@@ -173,27 +186,29 @@ namespace SmallGISApp
         {
             m_polygon.Add(P);
         }
-        public void Draw(Canvas canvas, bool IsFill)//面绘画 Draw重载
+        public void Draw(Canvas canvas, bool IsFill )//面绘画 Draw重载
         {
-
             if (!IsFill)
             {
                 // IsFill==false 画多边形线
                 for (int i = 0; i + 1 < m_polygon.Count; i++)
                 {
-                    //遍历一下box
-                    if (m_polygon[i].x > MaxX)
-                        MaxX = m_polygon[i].x;
-                    if (m_polygon[i].y > MaxY)
-                        MaxY = m_polygon[i].y;
-                    if (m_polygon[i].x < MinX)
-                        MinX = m_polygon[i].x;
-                    if (m_polygon[i].y < MinY)
-                        MinY = m_polygon[i].y;
+                    ////遍历一下box
+                    //if (m_polygon[i].x > MaxX)
+                    //    MaxX = m_polygon[i].x;
+                    //if (m_polygon[i].y > MaxY)
+                    //    MaxY = m_polygon[i].y;
+                    //if (m_polygon[i].x < MinX)
+                    //    MinX = m_polygon[i].x;
+                    //if (m_polygon[i].y < MinY)
+                    //    MinY = m_polygon[i].y;
 
                     LineGeometry myLineGeometry = new LineGeometry();
-                    myLineGeometry.StartPoint = new System.Windows.Point(m_polygon[i].x, m_polygon[i].y);
-                    myLineGeometry.EndPoint = new System.Windows.Point(m_polygon[i + 1].x, m_polygon[i + 1].y);
+
+                    CLayer.layertest.MapXYChange(m_polygon[i].x, m_polygon[i].y,canvas, ref m_polygon[i].Transformx, ref m_polygon[i].Transformy);
+                    CLayer.layertest.MapXYChange(m_polygon[i + 1].x, m_polygon[i + 1].y, canvas, ref m_polygon[i + 1].Transformx, ref m_polygon[i + 1].Transformy);
+                    myLineGeometry.StartPoint = new System.Windows.Point(m_polygon[i].Transformx, m_polygon[i].Transformy);
+                    myLineGeometry.EndPoint = new System.Windows.Point(m_polygon[i + 1].Transformx, m_polygon[i + 1].Transformy);
                     Path myPath = new Path();
                     myPath.Stroke = new SolidColorBrush(this.color);
                     //myPath.Stroke = Brushes.Black;
@@ -201,15 +216,15 @@ namespace SmallGISApp
                     myPath.Data = myLineGeometry;
                     canvas.Children.Add(myPath);
                 }
-                //遍历一下box
-                if (m_polygon[m_polygon.Count - 1].x > MaxX)
-                    MaxX = m_polygon[m_polygon.Count - 1].x;
-                if (m_polygon[m_polygon.Count - 1].y > MaxY)
-                    MaxY = m_polygon[m_polygon.Count - 1].y;
-                if (m_polygon[m_polygon.Count - 1].x < MinX)
-                    MinX = m_polygon[m_polygon.Count - 1].x;
-                if (m_polygon[m_polygon.Count - 1].y < MinY)
-                    MinY = m_polygon[m_polygon.Count - 1].y;
+                ////遍历一下box
+                //if (m_polygon[m_polygon.Count-1].x > MaxX)
+                //    MaxX = m_polygon[m_polygon.Count - 1].x;
+                //if (m_polygon[m_polygon.Count - 1].y > MaxY)
+                //    MaxY = m_polygon[m_polygon.Count - 1].y;
+                //if (m_polygon[m_polygon.Count - 1].x < MinX)
+                //    MinX = m_polygon[m_polygon.Count - 1].x;
+                //if (m_polygon[m_polygon.Count - 1].y < MinY)
+                //    MinY = m_polygon[m_polygon.Count - 1].y;
 
             }
             else if (IsFill)
@@ -219,19 +234,11 @@ namespace SmallGISApp
                 //SolidBrush blueBrush = new SolidBrush(Color.Blue);
 
                 System.Windows.Shapes.Polygon newPolygon = new System.Windows.Shapes.Polygon();
-                List<System.Windows.Point> System_points = new List<System.Windows.Point>();
+                List<System.Windows.Point>System_points= new List<System.Windows.Point>();
                 for (int i = 0; i < m_polygon.Count; i++)
                 {
-                    //遍历一下box
-                    if (m_polygon[i].x > MaxX)
-                        MaxX = m_polygon[i].x;
-                    if (m_polygon[i].y > MaxY)
-                        MaxY = m_polygon[i].y;
-                    if (m_polygon[i].x < MinX)
-                        MinX = m_polygon[i].x;
-                    if (m_polygon[i].y < MinY)
-                        MinY = m_polygon[i].y;
-                    System.Windows.Point s_P = new System.Windows.Point(m_polygon[i].x, m_polygon[i].y);
+                    CLayer.layertest.MapXYChange(m_polygon[i].x, m_polygon[i].y,canvas, ref m_polygon[i].Transformx, ref m_polygon[i].Transformy);
+                    System.Windows.Point s_P = new System.Windows.Point(m_polygon[i].Transformx, m_polygon[i].Transformy);
                     System_points.Add(s_P);
                 }
                 newPolygon.Points = new PointCollection(System_points);
@@ -242,13 +249,14 @@ namespace SmallGISApp
                 newPolygon.StrokeThickness = width;
                 //newPolygon.Fill = Brushes.LightBlue;  
                 //设置填充颜色
-                newPolygon.Fill = new SolidColorBrush(this.paintColor);
+                newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 230, 230, 250)); // 使用纯红色作为填充颜色
+
                 canvas.Children.Add(newPolygon);
             }
         }
     }
     //多面类 multi polygon class
-    internal class MultiPolygon : Geometry
+    internal class MultiPolygon:Geometry
     {
         public List<Polygon> m_multiPolygon { get; set; }
         public double width { get; set; }//线宽
@@ -267,13 +275,13 @@ namespace SmallGISApp
         }
         public void Draw(Canvas canvas)
         {
-            foreach (var Pg in m_multiPolygon)
+            foreach(var Pg in m_multiPolygon)
             {
                 //画线&Fill
                 Pg.Draw(canvas, false);
                 Pg.Draw(canvas, true);
             }
-
+          
         }
     }
 

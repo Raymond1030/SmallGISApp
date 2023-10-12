@@ -1,5 +1,4 @@
-﻿using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -13,10 +12,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Npgsql;
 using Color = System.Windows.Media.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
-using Brushes = System.Windows.Media.Brushes;
+
+
 
 namespace SmallGISApp
 {
@@ -25,12 +24,11 @@ namespace SmallGISApp
     /// </summary>
     
     public partial class MouseDraw : Window
-    {
+    {       
         //平移
         int Temp;
         private bool isDragging = false;
         Point lastPosition = new Point();
-
         bool isDrawingEnabled = false;//是否开始画图
 
         //画线 面
@@ -49,6 +47,8 @@ namespace SmallGISApp
         MultiPoint save_Point=new MultiPoint();
         MultiLine save_Line = new MultiLine();
         MultiPolygon save_Polygon = new MultiPolygon();
+
+        Vector delta = new Vector();
 
 
         public MouseDraw()
@@ -200,9 +200,13 @@ namespace SmallGISApp
 
         private void MousedrawingCanvas_MouseMove(object sender, MouseEventArgs e)
         {
+            double newX = 0;
+            double newY = 0;
             // 获取鼠标的当前位置
-            double newX = e.GetPosition(MousedrawingCanvas).X;
-            double newY = e.GetPosition(MousedrawingCanvas).Y;
+            newX = e.GetPosition(MousedrawingCanvas).X;
+            newY = e.GetPosition(MousedrawingCanvas).Y;           
+            
+            CLayer.layertest.reverseChange(MousedrawingCanvas,ref newX,ref newY);
 
             // 更新TextBox的文本为鼠标的实时位置
             string formattedText = $"X: {newX:F4}, Y: {newY:F4}";
@@ -233,7 +237,7 @@ namespace SmallGISApp
                 Double newPositionX = e.GetPosition(MousedrawingCanvas).X;
                 Double newPositionY = e.GetPosition(MousedrawingCanvas).Y;
                 Point newPosition = new Point(newPositionX, newPositionY);
-                Vector delta = new Vector();
+                
                 delta.X = newPosition.x - lastPosition.x;
                 delta.Y = newPosition.y - lastPosition.y;
 
@@ -268,40 +272,24 @@ namespace SmallGISApp
         }
         private void Translate(Vector translation)
         {
+            double deltax = translation.X * CLayer.layertest.scale;
+            double deltay = translation.Y * CLayer.layertest.scale;
+            CLayer.layertest.centerX -= deltax;
+            CLayer.layertest.centerY += deltay;
+
             MousedrawingCanvas.Children.Clear();
             foreach (Line line in save_Line.m_multiLine)
             {
-                line.MaxY = -9999;
-                line.MaxX = -9999;
-                line.MinY = 9999;
-                line.MinX = 9999;
-                for (int i = 0; i < line.m_Line.Count; i++)
-                {
-                    line.m_Line[i].x += translation.X;
-                    line.m_Line[i].y += translation.Y;
-                }
                 line.Draw(MousedrawingCanvas);
-
             }
 
             foreach (Polygon polygon in save_Polygon.m_multiPolygon)
             {
-                polygon.MaxY = -9999;
-                polygon.MaxX = -9999;
-                polygon.MinY = 9999;
-                polygon.MinX = 9999;
-                for (int i = 0; i < polygon.m_polygon.Count; i++)
-                {
-                    polygon.m_polygon[i].x += translation.X;
-                    polygon.m_polygon[i].y += translation.Y;
-                }
                 polygon.Draw(MousedrawingCanvas, true);
             }
 
             foreach (Point point in save_Point.m_multiPoint)
             {
-                point.x += translation.X;
-                point.y += translation.Y;
                 point.Draw(MousedrawingCanvas);
             }
         }
@@ -350,8 +338,136 @@ namespace SmallGISApp
                             // 处理点
                             NetTopologySuite.Geometries.Point point = feature.Geometry as NetTopologySuite.Geometries.Point;
                             Point myPoint = new Point(point.X, point.Y);
+                            //遍历一下box
+                            if (point.X > CLayer.layertest.MaxX)
+                                CLayer.layertest.MaxX = point.X;
+                            if (point.Y > CLayer.layertest.MaxY)
+                                CLayer.layertest.MaxY = point.Y;
+                            if (point.X < CLayer.layertest.MinX)
+                                CLayer.layertest.MinX = point.X;
+                            if (point.Y < CLayer.layertest.MinY)
+                                CLayer.layertest.MinY = point.Y;
+                            // 可以设置其它属性
+                            break;
+                        case DotSpatial.Data.FeatureType.Line:
+                            Line myLine = null;
+                            switch (feature.Geometry)
+                            {
+                                case NetTopologySuite.Geometries.LineString lineString:
+                                    // 处理线
+                                    myLine = new Line();
+                                    foreach (NetTopologySuite.Geometries.Coordinate coord in lineString.Coordinates)
+                                    {
+                                        Point p = new Point(coord.X, coord.Y);
+                                        myLine.m_Line.Add(p);
+                                        if (coord.X > CLayer.layertest.MaxX)
+                                            CLayer.layertest.MaxX = coord.X;
+                                        if (coord.Y > CLayer.layertest.MaxY)
+                                            CLayer.layertest.MaxY = coord.Y;
+                                        if (coord.X < CLayer.layertest.MinX)
+                                            CLayer.layertest.MinX = coord.X;
+                                        if (coord.Y < CLayer.layertest.MinY)
+                                            CLayer.layertest.MinY = coord.Y;
+                                    }
+                                    break;
+
+                                case NetTopologySuite.Geometries.MultiLineString multiLineString:
+                                    // 处理多线
+                                    foreach (var singleLineString in multiLineString.Geometries)
+                                    {
+                                        myLine = new Line();
+                                        foreach (NetTopologySuite.Geometries.Coordinate coord in singleLineString.Coordinates)
+                                        {
+                                            Point p = new Point(coord.X, coord.Y);
+                                            if (coord.X > CLayer.layertest.MaxX)
+                                                CLayer.layertest.MaxX = coord.X;
+                                            if (coord.Y > CLayer.layertest.MaxY)
+                                                CLayer.layertest.MaxY = coord.Y;
+                                            if (coord.X < CLayer.layertest.MinX)
+                                                CLayer.layertest.MinX = coord.X;
+                                            if (coord.Y < CLayer.layertest.MinY)
+                                                CLayer.layertest.MinY = coord.Y;
+                                            myLine.m_Line.Add(p);
+                                        }
+                                    }
+                                    break;
+
+                                default:
+                                    // 其他几何类型
+                                    break;
+                            }
+                            break;
+                        case DotSpatial.Data.FeatureType.Polygon:
+                            Polygon myPolygon = null;
+                            switch (feature.Geometry)
+                            {
+
+                                case NetTopologySuite.Geometries.Polygon polygon:
+                                    // 处理面
+                                    myPolygon = new Polygon();
+                                    foreach (NetTopologySuite.Geometries.Coordinate coord in polygon.Shell.Coordinates)
+                                    {
+                                        Point p = new Point(coord.X, coord.Y);
+                                        if (coord.X > CLayer.layertest.MaxX)
+                                            CLayer.layertest.MaxX = coord.X;
+                                        if (coord.Y > CLayer.layertest.MaxY)
+                                            CLayer.layertest.MaxY = coord.Y;
+                                        if (coord.X < CLayer.layertest.MinX)
+                                            CLayer.layertest.MinX = coord.X;
+                                        if (coord.Y < CLayer.layertest.MinY)
+                                            CLayer.layertest.MinY = coord.Y;
+                                        myPolygon.m_polygon.Add(p);
+                                    }
+                                    break;
+
+                                case NetTopologySuite.Geometries.MultiPolygon multiPolygon:
+                                    // 处理多面
+                                    foreach (var singlePolygon in multiPolygon.Geometries)
+                                    {
+                                        myPolygon = new Polygon();
+                                        foreach (NetTopologySuite.Geometries.Coordinate coord in singlePolygon.Coordinates)
+                                        {
+                                            Point p = new Point(coord.X, coord.Y);
+                                            if (coord.X > CLayer.layertest.MaxX)
+                                                CLayer.layertest.MaxX = coord.X;
+                                            if (coord.Y > CLayer.layertest.MaxY)
+                                                CLayer.layertest.MaxY = coord.Y;
+                                            if (coord.X < CLayer.layertest.MinX)
+                                                CLayer.layertest.MinX = coord.X;
+                                            if (coord.Y < CLayer.layertest.MinY)
+                                                CLayer.layertest.MinY = coord.Y;
+                                            myPolygon.m_polygon.Add(p);
+                                        }
+                                    }
+                                    break;
+
+                                default:
+                                    // 其他几何类型
+                                    break;
+                            }
+                            break;
+                        default:
+                            MessageBox.Show("Unsupported geometry type.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                    }
+                }
+                CLayer.layertest.SetFrame(ref CLayer.layertest, MousedrawingCanvas);
+
+                // 遍历所有的特征
+                foreach (DotSpatial.Data.IFeature feature in featureSet.Features)
+                {
+                    // 获取geometry的类型
+                    var featureType = feature.FeatureType;
+
+                    switch (featureType)
+                    {
+                        case DotSpatial.Data.FeatureType.Point:
+                            // 处理点
+                            NetTopologySuite.Geometries.Point point = feature.Geometry as NetTopologySuite.Geometries.Point;
+                            Point myPoint = new Point(point.X, point.Y);                         
                             // 可以设置其它属性
                             myPoint.Draw(MousedrawingCanvas); // 绘制点
+                            save_Point.PushPoint(myPoint);
                             break;
                         case DotSpatial.Data.FeatureType.Line:
                             Line myLine = null;
@@ -366,6 +482,7 @@ namespace SmallGISApp
                                         myLine.m_Line.Add(p);
                                     }
                                     myLine.Draw(MousedrawingCanvas); // 绘制线
+                                    save_Line.PushLine(myLine);
                                     break;
 
                                 case NetTopologySuite.Geometries.MultiLineString multiLineString:
@@ -402,7 +519,8 @@ namespace SmallGISApp
                                     }
                                     myPolygon.Draw(MousedrawingCanvas, false); // 绘制面的边界
                                     myPolygon.Draw(MousedrawingCanvas, true); // 填充面
-                                    break;
+                                    save_Polygon.PushPolygon(myPolygon);
+                                    break; 
 
                                 case NetTopologySuite.Geometries.MultiPolygon multiPolygon:
                                     // 处理多面
@@ -416,7 +534,8 @@ namespace SmallGISApp
                                         }
                                         myPolygon.Draw(MousedrawingCanvas, false); // 绘制面的边界
                                         myPolygon.Draw(MousedrawingCanvas, true); // 填充面
-                                    }
+                                        save_Polygon.PushPolygon(myPolygon);
+                                    }                                  
                                     break;
 
                                 default:
@@ -430,8 +549,9 @@ namespace SmallGISApp
                     }
                 }
             }
+            string formattedText = $"1: {1 / ((23.8 * 0.01) / (CLayer.layertest.scale * 1080 * 111 * 1000))}";
+            ScaleBox.Text = formattedText;
         }
-
 
         private void Checkbox_Edit_Checked(object sender, RoutedEventArgs e)
         {
@@ -540,7 +660,7 @@ namespace SmallGISApp
                 rectangle.Height = height;
 
                 // 设置矩形框的边框样式和颜色
-                rectangle.Stroke = Brushes.Red;
+                rectangle.Stroke = System.Windows.Media.Brushes.Red;
                 rectangle.StrokeThickness = 2;
 
                 // 将矩形框添加到Canvas控件中
@@ -555,15 +675,14 @@ namespace SmallGISApp
                 // 你可以在这里处理所选的颜色，例如更改背景色等。
             }
         }
-        private void TranslateButton(object sender, RoutedEventArgs e)
+        private void TranslateButton(int delta,object sender, RoutedEventArgs e)
         {
             isDrawingEnabled = false;
             Temp = 1 - Temp;
             if (Temp == 1)
             {
                 (sender as Button).Content = "停止平移";
-                isDragging = true;
-
+                isDragging = true;                          
             }
             else
             {
@@ -605,6 +724,81 @@ namespace SmallGISApp
 
         }
 
-    
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            CLayer.layertest.scale *= 1/0.95;
+            MousedrawingCanvas.Children.Clear();
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);
+            foreach (Polygon polygon in save_Polygon.m_multiPolygon)
+                polygon.Draw(MousedrawingCanvas, true);
+            foreach (Point point in save_Point.m_multiPoint)
+                point.Draw(MousedrawingCanvas);
+        }
+
+        private void MapZoomController(object sender, MouseWheelEventArgs e)
+        {
+            // Get the mouse click position
+            double winX = e.GetPosition(MousedrawingCanvas).X;
+            double winY = e.GetPosition(MousedrawingCanvas).Y;
+            currentPoint = new Point(winX, winY);
+            if (e.Delta > 0&& isDragging)
+            {
+                CLayer.layertest.scale /= 0.9;
+                CLayer.layertest.reverseChange(MousedrawingCanvas, ref winX, ref winY);
+                CLayer.layertest.centerX += (CLayer.layertest.centerX - winX) / 10.0;
+                CLayer.layertest.centerY += (CLayer.layertest.centerY - winY) / 10.0;
+            }
+            if (e.Delta < 0 && isDragging)
+            {
+                CLayer.layertest.scale *= 0.9;
+                CLayer.layertest.reverseChange(MousedrawingCanvas, ref winX, ref winY);
+                CLayer.layertest.centerX -= (CLayer.layertest.centerX - winX) / 9.0;
+                CLayer.layertest.centerY -= (CLayer.layertest.centerY - winY) / 9.0;
+            }
+            MousedrawingCanvas.Children.Clear();
+            string formattedText = $"1: {1 /(( 23.8 * 0.01) / (CLayer.layertest.scale * 1080 * 111 * 1000))}";
+            ScaleBox.Text = formattedText;
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);
+            foreach (Polygon polygon in save_Polygon.m_multiPolygon)
+                polygon.Draw(MousedrawingCanvas, true);
+            foreach (Point point in save_Point.m_multiPoint)
+                point.Draw(MousedrawingCanvas);
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            string formattedText = $"1: {1 / ((23.8 * 0.01) / (CLayer.layertest.scale * 1080 * 111 * 1000))}";
+            ScaleBox.Text = formattedText;
+            CLayer.layertest.scale *= 0.95;
+            MousedrawingCanvas.Children.Clear();
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);
+            foreach (Polygon polygon in save_Polygon.m_multiPolygon)
+                polygon.Draw(MousedrawingCanvas, true);
+            foreach (Point point in save_Point.m_multiPoint)
+                point.Draw(MousedrawingCanvas);
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            string formattedText = $"1: {1 / ((23.8 * 0.01) / (CLayer.layertest.scale * 1080 * 111 * 1000))}";
+            ScaleBox.Text = formattedText;
+            CLayer.layertest.scale *= 1 / 0.95;
+            MousedrawingCanvas.Children.Clear();
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);
+            foreach (Polygon polygon in save_Polygon.m_multiPolygon)
+                polygon.Draw(MousedrawingCanvas, true);
+            foreach (Point point in save_Point.m_multiPoint)
+                point.Draw(MousedrawingCanvas);
+        }
     }
+
 }

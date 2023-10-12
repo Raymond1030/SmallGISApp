@@ -19,7 +19,7 @@
 
     <Grid>
 
-        <Canvas x:Name="MousedrawingCanvas" Background="White" MouseDown="MousedrawingCanvas_MouseDown" MouseMove="MousedrawingCanvas_MouseMove" MouseUp="MousedrawingCanvas_MouseUp" Margin="0,127,0,0">
+        <Canvas x:Name="MousedrawingCanvas" Background="White" MouseDown="MousedrawingCanvas_MouseDown" MouseMove="MousedrawingCanvas_MouseMove" MouseUp="MousedrawingCanvas_MouseUp" MouseWheel="MapZoomController" Margin="0,127,0,0">
 
             <Grid Height="147" Width="377" Canvas.Left="1340" Canvas.Top="-254" RenderTransformOrigin="0.42,0.289">
 
@@ -30,7 +30,6 @@
 
 
             </Grid>
-   
 
 
 
@@ -108,7 +107,7 @@
                           Command="Copy"
                           Content="{materialDesign:PackIcon Kind=ContentCopy}"
                           ToolBar.OverflowMode="AsNeeded"
-                          ToolTip="Copy that stuff" />
+                          ToolTip="Copy that stuff" Click="Button_Click_1" />
 
                     <Separator />
                     <ListBox>
@@ -223,11 +222,14 @@
                         </Grid>
 
                     </materialDesign:PopupBox>
+                    <Button Content="ZoomIn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="81" Click="Button_Click_3"/>
+                    <Button Content="ZoomOut" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click_4"/>
 
                 </ToolBar>
             </ToolBarTray>
 
             <TextBox x:Name="MouseTextBox" Text="Mouse Position" TextWrapping="Wrap" Width="187" RenderTransformOrigin="-0.158,-3.622" Height="24" TextAlignment="Center" TextChanged="TextBox_TextChanged" MouseMove="MousedrawingCanvas_MouseMove" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            <TextBox x:Name="ScaleBox" Text="Scale" TextWrapping="Wrap" Width="188" RenderTransformOrigin="-0.158,-3.622" Height="24" TextAlignment="Center" TextChanged="TextBox_TextChanged" MouseMove="MousedrawingCanvas_MouseMove"/>
         </StackPanel>
     </Grid>
 </Window>
