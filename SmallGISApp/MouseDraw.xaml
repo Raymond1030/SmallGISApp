@@ -20,7 +20,7 @@
     <Grid>
 
         <Canvas x:Name="MousedrawingCanvas" Background="White" MouseDown="MousedrawingCanvas_MouseDown" MouseMove="MousedrawingCanvas_MouseMove" MouseUp="MousedrawingCanvas_MouseUp" Margin="0,127,0,0">
-            
+
             <Grid Height="147" Width="377" Canvas.Left="1340" Canvas.Top="-254" RenderTransformOrigin="0.42,0.289">
 
                 <!--<Button Content="画点" Click="PointDrawButton_Click" HorizontalAlignment="Left" Canvas.Left="124" Canvas.Top="29" VerticalAlignment="Top" Margin="116,45,0,0" />
@@ -30,6 +30,7 @@
 
 
             </Grid>
+   
 
 
 
@@ -90,13 +91,13 @@
                             Content="{materialDesign:PackIcon Kind=HandBackRight}" 
                             Selected="Item_Hand_Selected"  />
                     </ListBox>
-                      
+
                     <!--<xctk:ColorPicker x:Name="DrawcolorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged" Margin="123,65,645,135" SelectedColor="Black"/>-->
                     <!--
           when badging in a toolbar, make sure the parent ToolBar.ClipToBounds="False", and
           manually apply the button style
         -->
-                    
+
                     <Separator />
                     <Button
                         Command="Cut"
@@ -107,7 +108,7 @@
                           Command="Copy"
                           Content="{materialDesign:PackIcon Kind=ContentCopy}"
                           ToolBar.OverflowMode="AsNeeded"
-                          ToolTip="Copy that stuff" />  
+                          ToolTip="Copy that stuff" />
 
                     <Separator />
                     <ListBox>
@@ -161,21 +162,21 @@
                     <Slider x:Name="Size" ValueChanged="Slider_ValueChanged" IsSnapToTickEnabled="True" 
                             Value="5" Minimum="1" Maximum="50" SelectionStart="1" SelectionEnd="50" 
                             Height="21" Width="100"/>
-                    
+
                     <!--<xctk:ColorPicker x:Name="PaintcolorPicker" SelectedColorChanged="PaintColorPicker_SelectedColorChanged" Margin="123,96,645,104" SelectedColor="CadetBlue" RenderTransformOrigin="0.503,1.845"/>-->
                     <Separator />
                     <Button
                         Click="WrappedRectangle"
                         Content="{materialDesign:PackIcon Kind=RectangleOutline}"
                         ToolTip="Generate wrapped rectangles" />
-                    
+
                     <Button x:Name="Button_Clear"
                         Click="Button_Clear_Click"
                         Content="{materialDesign:PackIcon Kind=TrashCan}"
-                        ToolTip="Clear all vectors" />   
+                        ToolTip="Clear all vectors" />
 
                     <Separator />
-                    
+
                     <Label
                         VerticalAlignment="Center"
                         Content="Colors" />
@@ -222,10 +223,10 @@
                         </Grid>
 
                     </materialDesign:PopupBox>
-                    
+
                 </ToolBar>
             </ToolBarTray>
-            
+
             <TextBox x:Name="MouseTextBox" Text="Mouse Position" TextWrapping="Wrap" Width="187" RenderTransformOrigin="-0.158,-3.622" Height="24" TextAlignment="Center" TextChanged="TextBox_TextChanged" MouseMove="MousedrawingCanvas_MouseMove" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         </StackPanel>
     </Grid>

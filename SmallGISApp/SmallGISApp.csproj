@@ -8,9 +8,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspose.GIS" Version="23.9.0" />
+    <PackageReference Include="DotSpatial.Data" Version="4.0.656" />
+    <PackageReference Include="DotSpatial.Topology" Version="1.9.0" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
     <PackageReference Include="MaterialDesignColors" Version="2.1.4" />
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+    <PackageReference Include="Npgsql" Version="7.0.6" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\ProgramData\PKU\SmallGISApp_UI\SmallGISApp_ui3_1\SmallGISApp_ui3_1\SmallGISApp\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\ProgramData\PKU\SmallGISApp_UI\SmallGISApp_ui3_1\SmallGISApp_ui3_1\SmallGISApp\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\ProgramData\PKU\SmallGISApp_UI\SmallGISApp_ui3_1\SmallGISApp_ui3_1\SmallGISApp\.editorconfig" />
   </ItemGroup>
 
 </Project>

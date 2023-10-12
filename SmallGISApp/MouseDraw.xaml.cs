@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -12,8 +13,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Npgsql;
 using Color = System.Windows.Media.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace SmallGISApp
 {
@@ -311,8 +314,124 @@ namespace SmallGISApp
 
         private void TwitterButton_OnClick(object sender, RoutedEventArgs e)
         {
+            // 创建文件选择对话框
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.DefaultExt = ".shp";
+            dlg.Filter = "Shapefile Documents (.shp)|*.shp";
 
+            // 显示文件选择对话框
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // 处理文件选择对话框的结果
+            if (result == true)
+            {
+                // 打开选择的文件
+                string filename = dlg.FileName;
+
+                // 检查是否是.shp文件
+                if (System.IO.Path.GetExtension(filename).ToLower() != ".shp")
+                {
+                    MessageBox.Show("Selected file is not a .shp file!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // 载入shapefile
+                DotSpatial.Data.IFeatureSet featureSet = DotSpatial.Data.FeatureSet.OpenFile(filename);
+
+                // 遍历所有的特征
+                foreach (DotSpatial.Data.IFeature feature in featureSet.Features)
+                {
+                    // 获取geometry的类型
+                    var featureType = feature.FeatureType;
+
+                    switch (featureType)
+                    {
+                        case DotSpatial.Data.FeatureType.Point:
+                            // 处理点
+                            NetTopologySuite.Geometries.Point point = feature.Geometry as NetTopologySuite.Geometries.Point;
+                            Point myPoint = new Point(point.X, point.Y);
+                            // 可以设置其它属性
+                            myPoint.Draw(MousedrawingCanvas); // 绘制点
+                            break;
+                        case DotSpatial.Data.FeatureType.Line:
+                            Line myLine = null;
+                            switch (feature.Geometry)
+                            {
+                                case NetTopologySuite.Geometries.LineString lineString:
+                                    // 处理线
+                                    myLine = new Line();
+                                    foreach (NetTopologySuite.Geometries.Coordinate coord in lineString.Coordinates)
+                                    {
+                                        Point p = new Point(coord.X, coord.Y);
+                                        myLine.m_Line.Add(p);
+                                    }
+                                    myLine.Draw(MousedrawingCanvas); // 绘制线
+                                    break;
+
+                                case NetTopologySuite.Geometries.MultiLineString multiLineString:
+                                    // 处理多线
+                                    foreach (var singleLineString in multiLineString.Geometries)
+                                    {
+                                        myLine = new Line();
+                                        foreach (NetTopologySuite.Geometries.Coordinate coord in singleLineString.Coordinates)
+                                        {
+                                            Point p = new Point(coord.X, coord.Y);
+                                            myLine.m_Line.Add(p);
+                                        }
+                                        myLine.Draw(MousedrawingCanvas); // 绘制线
+                                    }
+                                    break;
+
+                                default:
+                                    // 其他几何类型
+                                    break;
+                            }
+                            break;
+                        case DotSpatial.Data.FeatureType.Polygon:
+                            Polygon myPolygon = null;
+                            switch (feature.Geometry)
+                            {
+
+                                case NetTopologySuite.Geometries.Polygon polygon:
+                                    // 处理面
+                                    myPolygon = new Polygon();
+                                    foreach (NetTopologySuite.Geometries.Coordinate coord in polygon.Shell.Coordinates)
+                                    {
+                                        Point p = new Point(coord.X, coord.Y);
+                                        myPolygon.m_polygon.Add(p);
+                                    }
+                                    myPolygon.Draw(MousedrawingCanvas, false); // 绘制面的边界
+                                    myPolygon.Draw(MousedrawingCanvas, true); // 填充面
+                                    break;
+
+                                case NetTopologySuite.Geometries.MultiPolygon multiPolygon:
+                                    // 处理多面
+                                    foreach (var singlePolygon in multiPolygon.Geometries)
+                                    {
+                                        myPolygon = new Polygon();
+                                        foreach (NetTopologySuite.Geometries.Coordinate coord in singlePolygon.Coordinates)
+                                        {
+                                            Point p = new Point(coord.X, coord.Y);
+                                            myPolygon.m_polygon.Add(p);
+                                        }
+                                        myPolygon.Draw(MousedrawingCanvas, false); // 绘制面的边界
+                                        myPolygon.Draw(MousedrawingCanvas, true); // 填充面
+                                    }
+                                    break;
+
+                                default:
+                                    // 其他几何类型
+                                    break;
+                            }
+                            break;
+                        default:
+                            MessageBox.Show("Unsupported geometry type.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            break;
+                    }
+                }
+            }
         }
+
 
         private void Checkbox_Edit_Checked(object sender, RoutedEventArgs e)
         {
@@ -392,7 +511,7 @@ namespace SmallGISApp
                 rectangle.Height = height;
 
                 // 设置矩形框的边框样式和颜色
-                rectangle.Stroke = Brushes.Red;
+                rectangle.Stroke = System.Windows.Media.Brushes.Red;
                 rectangle.StrokeThickness = 2;
 
                 // 将矩形框添加到Canvas控件中
@@ -485,5 +604,7 @@ namespace SmallGISApp
 
 
         }
+
+    
     }
 }
