@@ -1,0 +1,28 @@
+﻿<Window x:Class="SmallGISApp.PostGIS_Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SmallGISApp"
+        mc:Ignorable="d"
+        Title="PostGIS_Login" Height="450" Width="800">
+    <Grid Margin="0,0,10,0">
+
+        <Label Content="Host:" HorizontalAlignment="Left" Margin="155,88,0,0" VerticalAlignment="Top" Height="51" Width="89" FontSize="18"/>
+        <Label Content="Username:" HorizontalAlignment="Left" Margin="155,144,0,0" VerticalAlignment="Top" Height="51" Width="145" FontSize="18"/>
+        <Label Content="Password:" HorizontalAlignment="Left" Margin="155,200,0,0" VerticalAlignment="Top" Height="51" Width="145" FontSize="18"/>
+        <Label Content="Database:" HorizontalAlignment="Left" Margin="155,251,0,0" VerticalAlignment="Top" Height="51" Width="145" FontSize="18"/>
+        <TextBox Name="Host" HorizontalAlignment="Left" Margin="280,89,0,0" TextWrapping="Wrap" Text="Localhost" VerticalAlignment="Top" Width="120" TextChanged="TextBox_TextChanged" RenderTransformOrigin="0.787,0.465"/>
+
+        <TextBox Name="Username" HorizontalAlignment="Left" Margin="280,144,0,0" TextWrapping="Wrap" Text="postgres"  VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="Database" HorizontalAlignment="Left" Margin="280,252,0,0" TextWrapping="Wrap" Text="testData"  VerticalAlignment="Top" Width="120"/>
+        <Button Content="Login" HorizontalAlignment="Left" Margin="228,365,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.288,1.837" Click="PostGIS_Connect"/>
+        <Button Content="Exit" HorizontalAlignment="Left" Margin="384,365,0,0" VerticalAlignment="Top" RenderTransformOrigin="4.288,1.837" Click="Exit"/>
+        <TextBox Name="QueryTest" HorizontalAlignment="Left" Margin="598,183,0,0" TextWrapping="Wrap" Text="查询数据" VerticalAlignment="Top"/>
+        <PasswordBox Name="PasswordBox" HorizontalAlignment="Left" Margin="280,201,0,0" VerticalAlignment="Top" Width="120" PasswordChar="*" />
+        <Label  Content="Table:" HorizontalAlignment="Left" Margin="155,302,0,0" VerticalAlignment="Top" Height="51" Width="145" FontSize="18"/>
+        <TextBox Name="TableName" HorizontalAlignment="Left" Margin="280,303,0,0" TextWrapping="Wrap" Text="pasted" VerticalAlignment="Top" Width="120"/>
+
+    </Grid>
+
+</Window>

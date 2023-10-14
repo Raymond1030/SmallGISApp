@@ -25,6 +25,9 @@ namespace SmallGISApp
         public double _vArea = 0;
         public double _vLength = 0;
         public int _vSize = 0;
+
+        public int IsSelected = 0;
+
         public int id { get; set; }
         public System.Windows.Media.Color color { get; set; }//颜色
         public string attribute { get; set; }//属性
@@ -56,9 +59,8 @@ namespace SmallGISApp
             this.radius = 5; // 设置一个固定的半径
             this.color = System.Windows.Media.Colors.Black; // 设置一个固定的颜色
         }
-        public void Draw(Canvas canvas)//点绘画 Draw重载
-        {
-            CLayer.layertest.SetFrame(ref CLayer.layertest, canvas);
+        public void Draw(Canvas canvas, int temp = 0)//点绘画 Draw重载
+        {        
             Ellipse Drawpoint = new Ellipse
             {
                 //Fill = Brushes.Black,
@@ -66,7 +68,9 @@ namespace SmallGISApp
                 Width = this.radius * 2,
                 Height = this.radius * 2
             };
-            CLayer.layertest.MapXYChange(x, y,canvas, ref this.Transformx, ref this.Transformx);
+            if(temp!=IsSelected)
+                Drawpoint.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 0));
+            CLayer.layertest.MapXYChange(x, y,canvas, ref this.Transformx, ref this.Transformy);
             Canvas.SetLeft(Drawpoint, Transformx - this.radius);
             Canvas.SetTop(Drawpoint, Transformy - this.radius);
 
@@ -108,9 +112,8 @@ namespace SmallGISApp
 
         //线宽
         public double width { get; set; }
-        public void Draw(Canvas canvas)//线绘画 Draw重载
+        public void Draw(Canvas canvas, int temp = 0)//线绘画 Draw重载
         {
-            CLayer.layertest.SetFrame(ref CLayer.layertest, canvas);
             for (int i = 0; i+ 1< m_Line.Count; i++)
             {
                 ////遍历一下box
@@ -131,6 +134,8 @@ namespace SmallGISApp
                 Path myPath = new Path();
                 //myPath.Stroke = Brushes.Black;
                 myPath.Stroke = new SolidColorBrush(this.color);
+                if(temp!=IsSelected)
+                    myPath.Stroke = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 0));
                 myPath.StrokeThickness = width;
                 myPath.Data = myLineGeometry;
 
@@ -186,7 +191,7 @@ namespace SmallGISApp
         {
             m_polygon.Add(P);
         }
-        public void Draw(Canvas canvas, bool IsFill )//面绘画 Draw重载
+        public void Draw(Canvas canvas, bool IsFill, int temp =0)//面绘画 Draw重载
         {
             if (!IsFill)
             {
@@ -249,8 +254,10 @@ namespace SmallGISApp
                 newPolygon.StrokeThickness = width;
                 //newPolygon.Fill = Brushes.LightBlue;  
                 //设置填充颜色
-                newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 230, 230, 250)); // 使用纯红色作为填充颜色
-
+                if(temp ==IsSelected)
+                    newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 230, 230, 250)); 
+                else
+                    newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 0));
                 canvas.Children.Add(newPolygon);
             }
         }

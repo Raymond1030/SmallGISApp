@@ -222,8 +222,10 @@
                         </Grid>
 
                     </materialDesign:PopupBox>
-                    <Button Content="ZoomIn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="81" Click="Button_Click_3"/>
-                    <Button Content="ZoomOut" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click_4"/>
+                    <Button Content="ZoomIn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="81" Click="ZoomInval"/>
+                    <Button Content="ZoomOut" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ZoomOutval"/>
+                    <Button Content="Interaction" HorizontalAlignment="Left" VerticalAlignment="Top" Click="InteractionFuc"/>
+                    <Button Content="PostGISLogin" HorizontalAlignment="Left" VerticalAlignment="Top" Click="PostGIS_Open"/>
 
                 </ToolBar>
             </ToolBarTray>
