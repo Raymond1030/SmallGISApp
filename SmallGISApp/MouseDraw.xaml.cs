@@ -33,7 +33,7 @@ namespace SmallGISApp
         bool isDrawingEnabled = false;//是否开始画图
 
         //交互
-        double LimitDistance = 5;
+        double LimitDistance = 10;
         int InteractionVal = 0;
 
         //画线 面
@@ -356,7 +356,7 @@ namespace SmallGISApp
         //计算两点距离的平方
         private double Distance(Point p1, Point p2)
         {
-            return Math.Pow(p1.x - p2.x, 2) + Math.Pow(p1.y - p2.y, 2);
+            return Math.Pow(p1.Transformx - p2.Transformx, 2) + Math.Pow(p1.Transformy - p2.Transformy, 2);
         }
 
 
@@ -367,7 +367,7 @@ namespace SmallGISApp
             double d13 = Distance(p1, p3);
             double d23 = Distance(p2, p3);
             double aLessDP = d12 > d13 ? d13 : d12;
-            double S123 = Math.Abs((p1.x - p2.x) * (p1.y - p3.y) - (p1.x - p3.x) * (p1.y - p2.y));
+            double S123 = Math.Abs((p1.Transformx - p2.Transformx) * (p1.Transformy - p3.Transformy) - (p1.Transformx - p3.Transformx) * (p1.Transformy - p2.Transformy));
             double distanceLine = S123 / Math.Sqrt(d23);
             if (d12 + d23 > d13 && d13 + d23 > d12)
                 return distanceLine;
@@ -381,8 +381,8 @@ namespace SmallGISApp
             int i, j, c = 0;
             for (i = 0, j = _vPoint.m_polygon.Count - 2; i < _vPoint.m_polygon.Count - 1; j = i++)
             {
-                if (((_vPoint.m_polygon[i].y > test.y) != (_vPoint.m_polygon[j].y > test.y)) &&
-                    (test.x < (_vPoint.m_polygon[j].x - _vPoint.m_polygon[i].x) * (test.y - _vPoint.m_polygon[i].y) / (_vPoint.m_polygon[j].y - _vPoint.m_polygon[i].y) + _vPoint.m_polygon[i].x))
+                if (((_vPoint.m_polygon[i].Transformy > test.Transformy) != (_vPoint.m_polygon[j].Transformy > test.Transformy)) &&
+                    (test.Transformx < (_vPoint.m_polygon[j].Transformx - _vPoint.m_polygon[i].Transformx) * (test.Transformy - _vPoint.m_polygon[i].Transformy) / (_vPoint.m_polygon[j].Transformy - _vPoint.m_polygon[i].Transformy) + _vPoint.m_polygon[i].Transformx))
                     c = 1 - c;
             }
             return c;
@@ -411,8 +411,9 @@ namespace SmallGISApp
                 // Get the mouse click position
                 double winX = e.GetPosition(MousedrawingCanvas).X;
                 double winY = e.GetPosition(MousedrawingCanvas).Y;
-                CLayer.layertest.reverseChange(MousedrawingCanvas, ref winX, ref winY);
-                Point m_p = new Point(winX, winY);
+                Point m_p = new Point();
+                m_p.Transformx = winX;
+                m_p.Transformy = winY;
 
                 switch (InteractionVal)
                 {
@@ -433,7 +434,9 @@ namespace SmallGISApp
                             {
                                 double distanceTemporaryPoint = Poin2Distance(m_p, line.m_Line[i], line.m_Line[i + 1]);
                                 if (distanceTemporaryPoint < LimitDistance)
+                                {
                                     line.IsSelected = 1;
+                                }                                  
                             }
                             line.Draw(MousedrawingCanvas);
                         }
@@ -534,14 +537,12 @@ namespace SmallGISApp
                     // 去掉橡皮筋线条
                     if (temPath != null)
                     {
-
                         MousedrawingCanvas.Children.Remove(temPath);
                     }
                     //重新初始化
                     currentLine = new Line();
                     isDrawingLine = false;
                 }
-
             }
             //3. 鼠标画面
             else if (Item_Polygon.IsSelected == true && isDrawingEnabled == true)
@@ -556,10 +557,8 @@ namespace SmallGISApp
                 currentPoint = new Point(winX, winY);
                 if (e.LeftButton == MouseButtonState.Pressed && !isDrawingPolygon)
                 {
-
                     currentPolygon.m_polygon.Add(currentPoint);
                     isDrawingPolygon = true;
-
                 }
                 else if (e.LeftButton == MouseButtonState.Pressed && isDrawingPolygon)
                 {
@@ -649,9 +648,6 @@ namespace SmallGISApp
                 Double newPositionX = e.GetPosition(MousedrawingCanvas).X;
                 Double newPositionY = e.GetPosition(MousedrawingCanvas).Y;
 
-                // 先进行坐标变化
-                CLayer.layertest.reverseChange(MousedrawingCanvas, ref newPositionX, ref newPositionY);
-
                 Point newPosition = new Point(newPositionX, newPositionY);
                 
                 delta.X = newPosition.x - lastPosition.x;
@@ -694,16 +690,15 @@ namespace SmallGISApp
             CLayer.layertest.centerY += deltay;
 
             MousedrawingCanvas.Children.Clear();
-            foreach (Line line in save_Line.m_multiLine)
-            {
-                line.Draw(MousedrawingCanvas);
-            }
 
             foreach (Polygon polygon in save_Polygon.m_multiPolygon)
             {
                 polygon.Draw(MousedrawingCanvas, true);
             }
-
+            foreach (Line line in save_Line.m_multiLine)
+            {
+                line.Draw(MousedrawingCanvas);
+            }         
             foreach (Point point in save_Point.m_multiPoint)
             {
                 point.Draw(MousedrawingCanvas);
@@ -1129,6 +1124,7 @@ namespace SmallGISApp
 
         private void Item_Hand_Selected(object sender, RoutedEventArgs e)
         {
+            InteractionVal = 0;
             isDragging = true;
             isDrawingEnabled = false;
         }
@@ -1151,10 +1147,10 @@ namespace SmallGISApp
         {
             CLayer.layertest.scale *= 1/0.95;
             MousedrawingCanvas.Children.Clear();
-            foreach (Line line in save_Line.m_multiLine)
-                line.Draw(MousedrawingCanvas);
             foreach (Polygon polygon in save_Polygon.m_multiPolygon)
                 polygon.Draw(MousedrawingCanvas, true);
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);     
             foreach (Point point in save_Point.m_multiPoint)
                 point.Draw(MousedrawingCanvas);
         }
@@ -1182,10 +1178,10 @@ namespace SmallGISApp
             MousedrawingCanvas.Children.Clear();
             string formattedText = $"1: {1 /(( 23.8 * 0.01) / (CLayer.layertest.scale * 1080 * 111 * 1000))}";
             ScaleBox.Text = formattedText;
-            foreach (Line line in save_Line.m_multiLine)
-                line.Draw(MousedrawingCanvas);
             foreach (Polygon polygon in save_Polygon.m_multiPolygon)
                 polygon.Draw(MousedrawingCanvas, true);
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);
             foreach (Point point in save_Point.m_multiPoint)
                 point.Draw(MousedrawingCanvas);
         }
@@ -1196,10 +1192,10 @@ namespace SmallGISApp
             ScaleBox.Text = formattedText;
             CLayer.layertest.scale *= 0.95;
             MousedrawingCanvas.Children.Clear();
-            foreach (Line line in save_Line.m_multiLine)
-                line.Draw(MousedrawingCanvas);
             foreach (Polygon polygon in save_Polygon.m_multiPolygon)
                 polygon.Draw(MousedrawingCanvas, true);
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);
             foreach (Point point in save_Point.m_multiPoint)
                 point.Draw(MousedrawingCanvas);
         }
@@ -1210,17 +1206,22 @@ namespace SmallGISApp
             ScaleBox.Text = formattedText;
             CLayer.layertest.scale *= 1 / 0.95;
             MousedrawingCanvas.Children.Clear();
-            foreach (Line line in save_Line.m_multiLine)
-                line.Draw(MousedrawingCanvas);
             foreach (Polygon polygon in save_Polygon.m_multiPolygon)
                 polygon.Draw(MousedrawingCanvas, true);
+            foreach (Line line in save_Line.m_multiLine)
+                line.Draw(MousedrawingCanvas);
             foreach (Point point in save_Point.m_multiPoint)
                 point.Draw(MousedrawingCanvas);
         }
 
         private void InteractionFuc(object sender, RoutedEventArgs e)
         {
-            InteractionVal = 3- InteractionVal;
+            isDragging = false;
+            isDrawingEnabled = false;
+            if (InteractionVal != 3)
+                InteractionVal = 3;
+            else
+                InteractionVal = 0;
         }
 
         private void PostGIS_Open(object sender, RoutedEventArgs e)
@@ -1230,8 +1231,25 @@ namespace SmallGISApp
             postGIS_Login.Show();
         }
 
+        private void InteractionLine(object sender, RoutedEventArgs e)
+        {
+            isDragging = false;
+            isDrawingEnabled = false;
+            if (InteractionVal != 2)
+                InteractionVal = 2;
+            else
+                InteractionVal = 0;
+        }
 
-  
+        private void InteractionPoint(object sender, RoutedEventArgs e)
+        {
+            isDragging = false;
+            isDrawingEnabled = false;
+            if (InteractionVal != 1)
+                InteractionVal = 1;
+            else
+                InteractionVal = 0;
+        }
     }
 
 }
