@@ -257,7 +257,7 @@ namespace SmallGISApp
                 if(temp ==IsSelected)
                     newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 230, 230, 250)); 
                 else
-                    newPolygon.Fill = new SolidColorBrush(this.paintColor);
+                    newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 0));
                 canvas.Children.Add(newPolygon);
             }
         }
@@ -292,4 +292,71 @@ namespace SmallGISApp
         }
     }
 
+    public class DataReader
+    {
+        // 示例函数，从文件中读取点数据
+        internal List<Point> GetPointsFromFile(string filePath, MultiPoint save_Point)
+        {
+            List<Point> points = new List<Point>();
+           
+
+            // 示例：假设你有一个 MultiPoint 类的实例，包含多个点
+            MultiPoint multiPoint = GetMultiPoint(save_Point); // 你需要实现获取多点的逻辑
+
+            // 将 MultiPoint 中的点添加到列表中
+            points.AddRange(multiPoint.m_multiPoint);
+
+            return points;
+        }
+
+        // 示例函数，从文件中读取线数据
+        internal List<Line> GetLinesFromFile(string filePath, MultiLine save_Line)
+        {
+            List<Line> lines = new List<Line>();
+
+            // 示例：假设你有一个 MultiLine 类的实例，包含多条线
+            MultiLine multiLine = GetMultiLine(save_Line); // 你需要实现获取多线的逻辑
+
+            // 将 MultiLine 中的线添加到列表中
+            lines.AddRange(multiLine.m_multiLine);
+
+            return lines;
+        }
+
+        // 示例函数，从文件中读取多边形数据
+        internal List<Polygon> GetPolygonsFromFile(string filePath, MultiPolygon save_Polygon)
+        {
+            List<Polygon> polygons = new List<Polygon>();
+
+            // 示例：假设你有一个 MultiPolygon 类的实例，包含多个多边形
+            MultiPolygon multiPolygon = GetMultiPolygon(save_Polygon); // 你需要实现获取多面的逻辑
+
+            // 将 MultiPolygon 中的多边形添加到列表中
+            polygons.AddRange(multiPolygon.m_multiPolygon);
+
+            return polygons;
+        }
+
+        private MultiPoint GetMultiPoint(MultiPoint save_Point)
+        {
+            MultiPoint multiPoint = new MultiPoint();
+
+            return save_Point;
+        }
+
+        private MultiLine GetMultiLine(MultiLine save_Line)
+        {
+            MultiLine multiLine = new MultiLine();
+
+            return save_Line;
+        }
+
+        // 示例的获取多面的逻辑，你需要根据你的应用程序实现
+        private MultiPolygon GetMultiPolygon(MultiPolygon save_Polygon)
+        {
+            MultiPolygon multiPolygon = new MultiPolygon();
+
+            return save_Polygon;
+        }
+    }
 }
