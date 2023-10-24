@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,6 @@ using System.Windows.Shapes;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
-using SmallGISApp;
 
 namespace SmallGISApp
 {
@@ -20,10 +19,10 @@ namespace SmallGISApp
     {
         public static CLayer layertest = new CLayer();
 
-        public double MaxY = -9999;
-        public double MaxX = -9999;
-        public double MinY = 9999;
-        public double MinX = 9999;
+        public double MaxY = -9999999;
+        public double MaxX = -9999999;
+        public double MinY = 9999999;
+        public double MinX = 9999999;
         public double scale = 0;
         public double centerX = 0;
         public double centerY = 0;
@@ -48,7 +47,5 @@ namespace SmallGISApp
             tranx = ((mapX - centerX) / scale) + CanvasDraw.ActualWidth / 2;
             trany = CanvasDraw.ActualHeight / 2 - ((mapY - centerY) / scale);
         }
-
-
     }
 }

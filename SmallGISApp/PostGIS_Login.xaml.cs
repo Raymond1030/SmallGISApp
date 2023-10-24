@@ -33,7 +33,7 @@ namespace SmallGISApp
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+           
         }
 
         private void PostGIS_Connect(object sender, RoutedEventArgs e)

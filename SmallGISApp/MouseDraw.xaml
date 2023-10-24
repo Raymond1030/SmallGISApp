@@ -77,10 +77,10 @@
                     <Button
                         Click="TwitterButton_OnClick"
                         Content="{materialDesign:PackIcon Kind=Earth}"
-                        ToolTip="Follow me on Twitter" />
+                        ToolTip="Load shapefile" />
                     <Button
                         Content="{materialDesign:PackIcon Kind=ContentSave}"
-                        ToolTip="Save" />
+                        ToolTip="Save" Click="Button_Click_3" />
                     <Separator />
                     <ListBox SelectedIndex="0">
                         <ListBoxItem x:Name="Item_Cursor"
@@ -126,18 +126,31 @@
 
 
                         <ListBoxItem x:Name="Item_Point"
-                            Content="{materialDesign:PackIcon Kind=VectorPoint}" IsSelected ="False" IsEnabled="False" Selected="Item_Point_Selected" />
+                            Content="{materialDesign:PackIcon Kind=VectorPoint}" IsSelected ="False" IsEnabled="False" 
+                                     Selected="Item_Point_Selected" 
+                                     ToolTip="Point"/>
                         <ListBoxItem x:Name="Item_Line"
-                            Content="{materialDesign:PackIcon Kind=VectorLine}" IsEnabled="False" Selected="Item_Line_Selected" />
+                            Content="{materialDesign:PackIcon Kind=VectorLine}" IsEnabled="False" 
+                                     Selected="Item_Line_Selected" 
+                                     ToolTip="Line"/>
                         <ListBoxItem x:Name="Item_Polygon"
-                            Content="{materialDesign:PackIcon Kind=VectorPolygon}" IsEnabled="False" Selected="Item_Polygon_Selected"/>
+                            Content="{materialDesign:PackIcon Kind=VectorPolygon}" IsEnabled="False" 
+                                     Selected="Item_Polygon_Selected"
+                                     ToolTip="Polygon"/>
 
                     </ListBox>
 
-                    <CheckBox x:Name="Checkbox_Edit" Content="Edit Vector" 
+                    <!--<CheckBox x:Name="Checkbox_Edit" Content="Edit Vector" 
                               Checked="Checkbox_Edit_Checked" 
                               IsChecked="False" Unchecked="Checkbox_Edit_Unchecked"
-                              VerticalAlignment="Center"/>
+                              VerticalAlignment="Center"/>-->
+
+                    <Label Content="Edit" VerticalAlignment="Center"/>
+                    <ToggleButton
+                        Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                        Checked="Checkbox_Edit_Checked"
+                        Unchecked="Checkbox_Edit_Unchecked"
+                        ToolTip="Start edition"/>
 
                     <ListBox
                         SelectionMode="Extended">
@@ -158,16 +171,24 @@
                         Content="Point size:" />
                     <TextBlock x:Name="tblock" Text="{Binding Value, ElementName=Size}" RenderTransformOrigin="-1.923,-1.087" Height="28" Width="25" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                    <Slider x:Name="Size" ValueChanged="Slider_ValueChanged" IsSnapToTickEnabled="True" 
-                            Value="5" Minimum="1" Maximum="50" SelectionStart="1" SelectionEnd="50" 
-                            Height="21" Width="100"/>
+                    <materialDesign:PopupBox
+                        DockPanel.Dock="Right"
+                        PlacementMode="BottomAndAlignRightEdges" 
+                        HorizontalAlignment="Right"
+                        StaysOpen="True"
+                        ToolTip="Adjust size">
+                        <Grid Width="235">
+                            <Slider x:Name="Size" ValueChanged="Slider_ValueChanged" IsSnapToTickEnabled="True" 
+                                Value="5" Minimum="1" Maximum="50" SelectionStart="1" SelectionEnd="50" 
+                                Height="21" Width="200"/>
+                        </Grid>
+
+                    </materialDesign:PopupBox>
+
 
                     <!--<xctk:ColorPicker x:Name="PaintcolorPicker" SelectedColorChanged="PaintColorPicker_SelectedColorChanged" Margin="123,96,645,104" SelectedColor="CadetBlue" RenderTransformOrigin="0.503,1.845"/>-->
                     <Separator />
-                    <Button
-                        Click="WrappedRectangle"
-                        Content="{materialDesign:PackIcon Kind=RectangleOutline}"
-                        ToolTip="Generate wrapped rectangles" />
+
 
                     <Button x:Name="Button_Clear"
                         Click="Button_Clear_Click"
@@ -183,7 +204,8 @@
                         DockPanel.Dock="Right"
                         PlacementMode="BottomAndAlignRightEdges" 
                         HorizontalAlignment="Right"
-                        StaysOpen="True">
+                        StaysOpen="True"
+                        ToolTip="Select colors">
 
                         <Grid>
                             <Grid.RowDefinitions>
@@ -222,16 +244,62 @@
                         </Grid>
 
                     </materialDesign:PopupBox>
-                    <Button Content="ZoomIn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="81" Click="ZoomInval"/>
-                    <Button Content="ZoomOut" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ZoomOutval"/>
-                    <Button Content="Interaction" HorizontalAlignment="Left" VerticalAlignment="Top" Click="InteractionFuc"/>
-                    <Button Content="PostGISLogin" HorizontalAlignment="Left" VerticalAlignment="Top" Click="PostGIS_Open"/>
+                    <Separator/>
+
+                    <!--<Button Content="ZoomIn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="81" 
+                            Click="ZoomInval"/>-->
+                    <Button
+                        Click="ZoomInval"
+                        Content="{materialDesign:PackIcon Kind=MagnifyPlus}"
+                        ToolTip="Zoom In" />
+                    <Button
+                        Click="ZoomOutval"
+                        Content="{materialDesign:PackIcon Kind=MagnifyMinus}"
+                        ToolTip="Zoom Out" />
+                    <!--<Button Content="ZoomOut" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                        Click="ZoomOutval"/>-->
+                    <Separator/>
+                    <!--<Button Content="Interaction" HorizontalAlignment="Left" VerticalAlignment="Top" Click="InteractionFuc"/>-->
+                    <!--<Button Content="PostGISLogin" HorizontalAlignment="Left" VerticalAlignment="Top" Click="PostGIS_Open"/>-->
+
+
+                    <Button
+                        Click="InteractionPoint"
+                        Content="{materialDesign:PackIcon Kind=VectorPointEdit}"
+                        ToolTip="Interact points" />
+
+                    <Button
+                        Click="InteractionLine"
+                        Content="{materialDesign:PackIcon Kind=VectorPolylineEdit}"
+                        ToolTip="Interact lines" />
+                    <Button
+                        Click="InteractionFuc"
+                        Content="{materialDesign:PackIcon Kind=VectorSquareEdit}"
+                        ToolTip="Interact polygons" />
+                    <Separator/>
+                    <Button
+                        Click="PostGIS_Open"
+                        Content="{materialDesign:PackIcon Kind=EarthArrowUp}"
+                        ToolTip="PostGIS Login" />
 
                 </ToolBar>
             </ToolBarTray>
 
             <TextBox x:Name="MouseTextBox" Text="Mouse Position" TextWrapping="Wrap" Width="187" RenderTransformOrigin="-0.158,-3.622" Height="24" TextAlignment="Center" TextChanged="TextBox_TextChanged" MouseMove="MousedrawingCanvas_MouseMove" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-            <TextBox x:Name="ScaleBox" Text="Scale" TextWrapping="Wrap" Width="188" RenderTransformOrigin="-0.158,-3.622" Height="24" TextAlignment="Center" TextChanged="TextBox_TextChanged" MouseMove="MousedrawingCanvas_MouseMove"/>
+            <TextBox x:Name="ScaleBox" Text="Scale" TextWrapping="Wrap" Width="188" RenderTransformOrigin="-0.158,-3.622" Height="24" TextAlignment="Center" TextChanged="TextBox_TextChanged" MouseMove="MousedrawingCanvas_MouseMove" HorizontalAlignment="Right" Margin="0,41,0,0"/>
+            <Grid Width="300" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <TreeView
+                    MinWidth="220" x:Name="layersTreeView" ItemsSource="{Binding layerslist}">
+                    <TreeView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding is_visible}"  Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" />
+                                <TextBlock Text="{Binding Name}" Margin="5,0,0,0" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
         </StackPanel>
     </Grid>
 </Window>
