@@ -1302,10 +1302,10 @@ namespace SmallGISApp
             MousedrawingCanvas.Children.Clear();
             string formattedText = $"1: {1 /(( 23.8 * 0.01) / (CLayer.layertest.scale * 1080 * 111 * 1000))}";
             ScaleBox.Text = formattedText;
-            foreach (Polygon polygon in save_Polygon.m_multiPolygon)
-                polygon.Draw(MousedrawingCanvas, true);
             foreach (Line line in save_Line.m_multiLine)
                 line.Draw(MousedrawingCanvas);
+            foreach (Polygon polygon in save_Polygon.m_multiPolygon)
+                polygon.Draw(MousedrawingCanvas, true);
             foreach (Point point in save_Point.m_multiPoint)
                 point.Draw(MousedrawingCanvas);
         }
@@ -1355,101 +1355,8 @@ namespace SmallGISApp
             postGIS_Login.Show();
         }
 
-        private void InteractionLine(object sender, RoutedEventArgs e)
-        {
-            isDragging = false;
-            isDrawingEnabled = false;
-            if (InteractionVal != 2)
-                InteractionVal = 2;
-            else
-                InteractionVal = 0;
-        }
 
-        private void InteractionPoint(object sender, RoutedEventArgs e)
-        {
-            isDragging = false;
-            isDrawingEnabled = false;
-            if (InteractionVal != 1)
-                InteractionVal = 1;
-            else
-                InteractionVal = 0;
-        }
-
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            // 创建要保存的 Shapefile
-            FeatureSet newShapefile = new FeatureSet();
-            newShapefile.Projection = DotSpatial.Projections.KnownCoordinateSystems.Geographic.World.WGS1984;
-            string newShapefilePath = "";
-            string filePath = "./NewFile_Point.shp";
-            string content = "";
-            File.WriteAllText(filePath, content);
-            newShapefilePath = filePath + content;
-            // 添加点数据
-            newShapefile.FeatureType = DotSpatial.Data.FeatureType.Point;
-            DataReader dataReader = new DataReader();
-            List<Point> pointsToSave = dataReader.GetPointsFromFile(newShapefilePath, save_Point); // 假设有一个获取点数据的函数
-            foreach (Point point in pointsToSave)
-            {
-                NetTopologySuite.Geometries.Coordinate coordinate = new NetTopologySuite.Geometries.Coordinate(point.x, point.y);
-                // 使用 GeometryFactory 创建一个 Point 对象
-                NetTopologySuite.Geometries.GeometryFactory factory = new NetTopologySuite.Geometries.GeometryFactory();
-                IFeature feature = newShapefile.AddFeature(factory.CreatePoint(coordinate));
-                // 这里可以设置其他属性，例如 feature.DataRow["AttributeName"] = attributeValue;
-            }
-
-            // 保存 Shapefile 文件
-
-            newShapefile.SaveAs(newShapefilePath, true);
-
-            // 创建一个新的 ShapefileFeatureSet 对象，以便添加下一类要素之前不影响之前的数据
-            newShapefile = new FeatureSet();
-            filePath = "./NewFile_Line.shp";
-            content = "";
-            File.WriteAllText(filePath, content);
-            newShapefilePath = filePath + content;
-            // 添加线数据
-            newShapefile.FeatureType = DotSpatial.Data.FeatureType.Line;
-            List<Line> linesToSave = dataReader.GetLinesFromFile(newShapefilePath, save_Line); // 假设有一个获取线数据的函数
-            foreach (Line line in linesToSave)
-            {
-                List<NetTopologySuite.Geometries.Coordinate> coordinates = line.m_Line.Select(p => new NetTopologySuite.Geometries.Coordinate(p.x, p.y)).ToList();
-                NetTopologySuite.Geometries.GeometryFactory factory = new NetTopologySuite.Geometries.GeometryFactory();
-                IFeature feature = newShapefile.AddFeature(factory.CreateLineString(coordinates.ToArray()));
-                // 这里可以设置其他属性
-            }
-
-            // 保存 Shapefile 文件
-
-            newShapefile.SaveAs(newShapefilePath, true);
-
-            // 创建一个新的 ShapefileFeatureSet 对象，以便添加下一类要素之前不影响之前的数据
-            newShapefile = new FeatureSet();
-            filePath = "./NewFile_Polygon.shp";
-            content = "";
-            File.WriteAllText(filePath, content);
-            newShapefilePath = filePath + content;
-            // 添加面数据
-            newShapefile.FeatureType = DotSpatial.Data.FeatureType.Polygon;
-            List<Polygon> polygonsToSave = dataReader.GetPolygonsFromFile(newShapefilePath, save_Polygon); // 假设有一个获取面数据的函数
-            foreach (Polygon polygon in polygonsToSave)
-            {
-                List<NetTopologySuite.Geometries.Coordinate> coordinates = polygon.m_polygon.Select(p => new NetTopologySuite.Geometries.Coordinate(p.x, p.y)).ToList();
-                // 确保坐标列表是封闭的，即起始点和结束点相同
-                if (coordinates.Count > 1 && !coordinates.First().Equals2D(coordinates.Last()))
-                {
-                    coordinates.Add(coordinates.First()); // 将起始点添加到末尾，形成封闭的环
-                }
-                NetTopologySuite.Geometries.GeometryFactory factory = new NetTopologySuite.Geometries.GeometryFactory();
-                IFeature feature = newShapefile.AddFeature(factory.CreatePolygon(coordinates.ToArray()));
-
-            }
-
-            // 保存 Shapefile 文件
-
-            newShapefile.SaveAs(newShapefilePath, true);
-
-        }
+  
     }
 
 }

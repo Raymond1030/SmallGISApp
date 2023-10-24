@@ -257,7 +257,7 @@ namespace SmallGISApp
                 if(temp ==IsSelected)
                     newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 230, 230, 250)); 
                 else
-                    newPolygon.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, 255, 255, 0));
+                    newPolygon.Fill = new SolidColorBrush(this.paintColor);
                 canvas.Children.Add(newPolygon);
             }
         }
