@@ -8,6 +8,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Color = System.Windows.Media.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
+using System.Xml.Linq;
 
 
 namespace SmallGISApp
@@ -62,7 +64,7 @@ namespace SmallGISApp
 
         //定义一个回调或事件来接收GeoJSON数据。
         // 修改委托为包含两个参数
-        public delegate void GeoJsonReceivedHandler(object sender, string geoJsonData);
+        public delegate void GeoJsonReceivedHandler(object sender, string geoJsonData, string tablename);
         public event GeoJsonReceivedHandler OnGeoJsonReceived;
         public MouseDraw()
         {
@@ -70,17 +72,25 @@ namespace SmallGISApp
             OnGeoJsonReceived += HandleGeoJsonData;
         }
         // 定义一个保护的方法来触发此事件
-        public virtual void RaiseGeoJsonReceived(string geoJsonData)
+        public virtual void RaiseGeoJsonReceived(string geoJsonData,string tablename)
         {
-            OnGeoJsonReceived?.Invoke(this,geoJsonData);
+            OnGeoJsonReceived?.Invoke(this,geoJsonData,tablename);
         }
-        private void HandleGeoJsonData(object sender, string geoJsonData)
+        private void HandleGeoJsonData(object sender, string geoJsonData,string tablename)
         {
 
             var obj=JObject.Parse(geoJsonData);
             // 这里处理和绘制您的GeoJSON数据
             //var type = obj["type"].ToString();
             var features = obj["features"] as Newtonsoft.Json.Linq.JArray;
+
+            // 获取文件名（不包含扩展名）
+            string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(tablename);
+
+            // 创建一个新的图层对象
+            Layer layer = new Layer(fileNameWithoutExtension);
+
+
             if (features != null && features.Count > 0)
             {
                 // 遍历所有的特征
@@ -107,6 +117,7 @@ namespace SmallGISApp
                             if (point.y < CLayer.layertest.MinY)
                                 CLayer.layertest.MinY = point.y;
                             // 可以设置其它属性
+                            layer.AddPoint(point);
                             break;
                         case "Line":
                             Line myLine = null;
@@ -125,7 +136,9 @@ namespace SmallGISApp
                                     CLayer.layertest.MinX = p.x;
                                 if (p.y < CLayer.layertest.MinY)
                                     CLayer.layertest.MinY =p.y;
+                                
                             }
+                            layer.AddLine(myLine);
                             break;
                         case "MultiLineString":
                             foreach (var singleLineString in feature["geometry"]["coordinates"])
@@ -145,7 +158,10 @@ namespace SmallGISApp
                                     if (p.y < CLayer.layertest.MinY)
                                         CLayer.layertest.MinY = p.y;
                                 }
+                                layer.AddLine(myLine);
                             }
+        
+
                             break;
                         case "Polygon":
                             Polygon myPolygon = null;
@@ -164,6 +180,7 @@ namespace SmallGISApp
                                 if (p.y < CLayer.layertest.MinY)
                                     CLayer.layertest.MinY = p.y;
                             }
+                            layer.AddPolygon(myPolygon);
                             break;
                         case"MultiPolygon":
                             foreach (var singlePolygon in feature["geometry"]["coordinates"])
@@ -183,6 +200,7 @@ namespace SmallGISApp
                                     if (p.y < CLayer.layertest.MinY)
                                         CLayer.layertest.MinY = p.y;
                                 }
+                                layer.AddPolygon(myPolygon);
                             }
                             break;
                             //switch (feature.Geometry)
@@ -347,6 +365,13 @@ namespace SmallGISApp
                 }
                 
             }
+
+            //图层列表的绘制
+            layerslist.Add(layer);
+            layersTreeView.ItemsSource = layerslist;
+
+
+            //比例尺绘制
             string formattedText = $"1: {1 / ((23.8 * 0.01) / (CLayer.layertest.scale * 1080 * 111 * 1000))}";
             ScaleBox.Text = formattedText;
 
@@ -761,7 +786,7 @@ namespace SmallGISApp
             // 创建文件选择对话框
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".shp";
-            dlg.Filter = "Shapefile Documents (.shp)|*.shp";
+            //dlg.Filter = "Shapefile Documents (.shp)|*.shp";
 
             // 显示文件选择对话框
             Nullable<bool> result = dlg.ShowDialog();
@@ -784,6 +809,21 @@ namespace SmallGISApp
 
                 // 获取文件名（不包含扩展名）
                 string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(filename);
+
+                //AttributeTable Attributes = new AttributeTable();
+                //Attributes.Open(filename);
+                
+                // 属性表
+                string dbfFile = System.IO.Path.ChangeExtension(filename, ".dbf");
+                DotSpatial.Data.IFeatureSet dbfSet = DotSpatial.Data.FeatureSet.OpenFile(dbfFile);
+                var dataTable = ShapefileToDataTable(featureSet);
+
+                // Showing the DataAttributeShow window and setting its data source
+                DataAttributeShow dataAttributeShow = new DataAttributeShow();
+                dataAttributeShow.dataGrid.ItemsSource = dataTable.DefaultView;
+                dataAttributeShow.Show();
+
+
 
                 // 创建一个新的图层对象
                 Layer layer = new Layer(fileNameWithoutExtension);
@@ -929,6 +969,7 @@ namespace SmallGISApp
                 layerslist.Add(layer);
                 layersTreeView.ItemsSource = layerslist;
 
+            
                 // 遍历所有的特征
                 foreach (DotSpatial.Data.IFeature feature in featureSet.Features)
                 {
@@ -1031,6 +1072,13 @@ namespace SmallGISApp
             ScaleBox.Text = formattedText;
         }
 
+        private DataTable ShapefileToDataTable(IFeatureSet featureSet)
+        {
+            // 获取DataTable，它包含所有的属性数据
+            DataTable attributeTable = featureSet.GetAttributes(0,featureSet.NumRows());
+
+            return attributeTable;
+        }
         private void RedrawLayers()
         {
             // 清除当前画布上的所有图形

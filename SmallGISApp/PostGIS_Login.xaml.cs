@@ -71,11 +71,12 @@ namespace SmallGISApp
                         string geoJsonData = cmd.ExecuteScalar().ToString();
 
                         // Pass the data to the first window
-                        MouseDrawWindow?.RaiseGeoJsonReceived(geoJsonData);
+                        MouseDrawWindow?.RaiseGeoJsonReceived(geoJsonData,Table);
 
                         // If you still want to display this in the current window:
                         QueryTest.Text = geoJsonData.Substring(0, 100) + "..."; // Displaying only first 100 chars as an example
                                                                                 // Convert GeoJSON attributes to DataTable
+                        // 将Geojson转化成属性表
                         var dataTable = ConvertGeoJsonToDataTable(geoJsonData);
 
                         // Showing the DataAttributeShow window and setting its data source
